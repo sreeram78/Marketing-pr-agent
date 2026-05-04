@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>A&P PR Agent — Finance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0E1117;--paper:#F5F2EB;--paper2:#EDE9E0;--paper3:#E6E1D6;
+  --rule:#D4CFC4;--rule2:#C2BDB0;
+  --accent:#C8402B;--accent-s:rgba(200,64,43,.1);--accent-m:rgba(200,64,43,.22);
+  --blue:#1B4F8A;--blue-s:rgba(27,79,138,.1);--blue-m:rgba(27,79,138,.22);
+  --green:#1A6B45;--green-s:rgba(26,107,69,.1);--green-m:rgba(26,107,69,.22);
+  --amber:#9B6B00;--amber-s:rgba(155,107,0,.1);--amber-m:rgba(155,107,0,.22);
+  --purple:#5B3A8A;--purple-s:rgba(91,58,138,.1);--purple-m:rgba(91,58,138,.22);
+  --teal:#0F6B6B;--teal-s:rgba(15,107,107,.1);--teal-m:rgba(15,107,107,.22);
+  --muted:#7A7468;
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'Geist Mono',monospace;
+  --sans:'Outfit',sans-serif;
+}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);display:flex;flex-direction:column;}
+
+/* ─────────────────────────────────────────────
+   COPILOT PANEL (conversation-first)
+───────────────────────────────────────────── */
+.cp{
+  position:fixed;
+  top:55px;
+  bottom:0;
+  right:-460px;
+  width:440px;
+  background:var(--paper);
+  border-left:1px solid var(--rule2);
+  z-index:150;
+  display:flex;
+  flex-direction:column;
+  transition:right .22s;
+  box-shadow:-18px 0 60px rgba(14,17,23,.12);
+}
+.cp.open{ right:0; }
+
+.cph{
+  padding:12px 12px;
+  border-bottom:1px solid var(--rule);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:var(--paper);
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+.cpMode{
+  font-family:var(--mono);
+  font-size:11px;
+  border:1px solid var(--rule2);
+  background:var(--paper2);
+  border-radius:6px;
+  padding:4px 8px;
+  color:var(--ink);
+}
+.cp-pill{
+  font-family:var(--mono);
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid rgba(27,79,138,.25);
+  background:rgba(27,79,138,.08);
+  color:var(--blue);
+}
+
+.cpb{
+  flex:1;
+  overflow:auto;
+  padding:12px;
+}
+
+.cpWelcome{
+  border:1px dashed var(--rule2);
+  background:var(--paper2);
+  border-radius:10px;
+  padding:14px;
+  margin-bottom:12px;
+}
+.cpHeroTitle{ font-family:var(--serif); font-size:20px; font-style:italic; }
+.cpHeroSub{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.5; }
+
+.cpChipRow{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.cpChip{
+  font-size:11px;
+  border:1px solid var(--rule2);
+  background:var(--paper);
+  color:var(--muted);
+  padding:6px 10px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:all .12s;
+}
+.cpChip:hover{ border-color:var(--ink); color:var(--ink); }
+
+.cpMsgs{ display:flex; flex-direction:column; gap:10px; padding-bottom:8px; }
+.cpMsg{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+}
+.cpAvatar{
+  width:26px; height:26px;
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px;
+  border:1px solid var(--rule2);
+  background:var(--paper2);
+}
+.cpBubble{
+  flex:1;
+  border:1px solid var(--rule);
+  background:var(--paper2);
+  border-radius:12px;
+  padding:10px 10px;
+  line-height:1.55;
+  font-size:12.5px;
+}
+.cpBubble.user{
+  background:rgba(200,64,43,.08);
+  border-color:rgba(200,64,43,.22);
+}
+.cpMeta{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:6px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.cpCites{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+.cpCite{
+  font-family:var(--mono);
+  font-size:10px;
+  border:1px solid var(--rule2);
+  padding:3px 7px;
+  border-radius:999px;
+  cursor:pointer;
+  background:var(--paper);
+  color:var(--blue);
+}
+.cpCite:hover{ border-color:var(--blue); background:var(--blue-s); }
+
+.cpf{
+  border-top:1px solid var(--rule);
+  padding:10px;
+  background:var(--paper);
+}
+.cpAttach{ display:flex; gap:6px; margin-bottom:8px; }
+.cpIconBtn{
+  width:32px; height:32px;
+  border-radius:8px;
+  border:1px solid var(--rule2);
+  background:var(--paper2);
+  cursor:pointer;
+}
+.cpIconBtn:hover{ border-color:var(--ink); }
+
+.cpComposer{ display:flex; gap:8px; align-items:flex-end; }
+.cpInput{
+  flex:1;
+  resize:none;
+  border:1px solid var(--rule2);
+  background:var(--paper2);
+  border-radius:10px;
+  padding:9px 10px;
+  font-size:12.5px;
+  outline:none;
+}
+.cpInput:focus{ border-color:var(--blue); }
+.cpSend{
+  width:40px; height:40px;
+  border-radius:12px;
+  border:none;
+  background:var(--ink);
+  color:var(--paper);
+  cursor:pointer;
+  font-size:16px;
+}
+.cpSend:disabled{ opacity:.4; cursor:not-allowed; }
+
+.cpTyping{
+  display:inline-flex;
+  gap:4px;
+  align-items:center;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+}
+.cpDot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--rule2);
+  animation:cpb 1s infinite ease-in-out;
+}
+.cpDot:nth-child(2){ animation-delay:.15s; }
+.cpDot:nth-child(3){ animation-delay:.3s; }
+@keyframes cpb{ 0%,100%{ transform:translateY(0); opacity:.6; } 50%{ transform:translateY(-3px); opacity:1; } }
+
+/* HEADER */
+.hdr{background:var(--ink);color:var(--paper);padding:0 20px;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:3px solid var(--accent);}
+.hdr-logo{font-family:var(--serif);font-size:18px;font-style:italic;white-space:nowrap;}
+.hdr-logo span{color:var(--accent);}
+.hd{width:1px;height:14px;background:rgba(245,242,235,.18);flex-shrink:0;}
+.hdr-sub{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,242,235,.34);white-space:nowrap;}
+.hdr-yr{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);background:rgba(200,64,43,.15);border:1px solid rgba(200,64,43,.3);padding:2px 8px;border-radius:4px;}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.hdr-user{font-size:11px;color:rgba(245,242,235,.4);}
+.hdr-user strong{color:var(--paper);font-weight:500;}
+.cur-sw{display:flex;gap:2px;background:rgba(245,242,235,.07);border:1px solid rgba(245,242,235,.13);border-radius:5px;padding:2px;}
+.cur-opt{font-family:var(--mono);font-size:10px;font-weight:600;padding:3px 6px;border-radius:3px;cursor:pointer;color:rgba(245,242,235,.42);transition:all .12s;}
+.cur-opt.active{background:var(--accent);color:#fff;}
+.cur-opt:hover:not(.active){color:rgba(245,242,235,.8);background:rgba(245,242,235,.1);}
+.hbtn{background:var(--accent);color:var(--paper);border:none;font-family:var(--sans);font-size:12px;font-weight:600;padding:6px 12px;border-radius:4px;cursor:pointer;transition:opacity .12s;}
+.hbtn:hover{opacity:.85;}
+.hbtn.ghost{background:transparent;border:1px solid rgba(245,242,235,.2);color:rgba(245,242,235,.6);}
+.hbtn.ghost:hover{border-color:rgba(245,242,235,.5);color:var(--paper);opacity:1;}
+
+.shell{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sb{width:190px;flex-shrink:0;background:var(--paper2);border-right:1px solid var(--rule);display:flex;flex-direction:column;padding:12px 0;overflow-y:auto;}
+.sb-sec{padding:0 8px;margin-bottom:12px;}
+.sb-lbl{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 7px;margin-bottom:4px;}
+.si{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:5px;font-size:12.5px;color:var(--muted);cursor:pointer;transition:all .12s;margin-bottom:1px;}
+.si:hover{background:var(--rule);color:var(--ink);}
+.si.active{background:var(--ink);color:var(--paper);}
+.si-ico{width:13px;text-align:center;font-size:11px;flex-shrink:0;}
+.si-badge{margin-left:auto;font-family:var(--mono);font-size:9px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 5px;font-weight:600;}
+.si-badge.w{background:var(--amber);}
+.si-badge.g{background:var(--green);}
+.si-badge.t{background:var(--teal);}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;}
+.tb{padding:15px 22px 0;display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.pg-title{font-family:var(--serif);font-size:23px;font-style:italic;line-height:1.1;}
+.pg-title small{display:block;font-family:var(--sans);font-style:normal;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;}
+.tb-acts{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap;}
+.ct{padding:0 22px 26px;}
+
+/* BUTTONS */
+.btn{padding:6px 12px;border-radius:5px;font-family:var(--sans);font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all .12s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.btn-p{background:var(--ink);color:var(--paper);}
+.btn-p:hover{background:#1e2535;}
+.btn-s{background:var(--paper);color:var(--ink);border:1px solid var(--rule2);}
+.btn-s:hover{border-color:var(--ink);}
+.btn-a{background:var(--green-s);color:var(--green);border:1px solid var(--green-m);}
+.btn-a:hover{background:rgba(26,107,69,.18);}
+.btn-r{background:var(--accent-s);color:var(--accent);border:1px solid var(--accent-m);}
+.btn-r:hover{background:rgba(200,64,43,.15);}
+.btn-blue{background:var(--blue-s);color:var(--blue);border:1px solid var(--blue-m);}
+.btn-blue:hover{background:rgba(27,79,138,.18);}
+.btn-teal{background:var(--teal-s);color:var(--teal);border:1px solid var(--teal-m);}
+.btn-teal:hover{background:rgba(15,107,107,.18);}
+.btn-amber{background:var(--amber-s);color:var(--amber);border:1px solid var(--amber-m);}
+.btn-amber:hover{background:rgba(155,107,0,.18);}
+
+/* STAT CARDS */
+.sg{display:grid;gap:10px;margin-bottom:18px;}
+.sg-4{grid-template-columns:repeat(4,1fr);}
+.sg-5{grid-template-columns:repeat(5,1fr);}
+.sg-6{grid-template-columns:repeat(6,1fr);}
+.sc{background:var(--paper2);border:1px solid var(--rule);border-radius:7px;padding:13px;position:relative;overflow:hidden;}
+.sc::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+.sc1::after{background:var(--accent);}
+.sc2::after{background:var(--amber);}
+.sc3::after{background:var(--green);}
+.sc4::after{background:var(--blue);}
+.sc5::after{background:var(--teal);}
+.sc6::after{background:var(--purple);}
+.sn{font-family:var(--mono);font-size:20px;font-weight:600;line-height:1;margin-bottom:3px;}
+.sl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:500;}
+.ss{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* SEC HEADER */
+.sh{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.st{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.sr2{flex:1;height:1px;background:var(--rule);}
+
+/* TABLE */
+.ptbl{width:100%;border-collapse:collapse;}
+.pthead tr{border-bottom:2px solid var(--ink);}
+.pthead th{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;font-weight:500;white-space:nowrap;}
+.ptr{border-bottom:1px solid var(--rule);cursor:pointer;transition:background .1s;}
+.ptr:hover{background:var(--paper2);}
+.ptr td{padding:9px 8px;font-size:12.5px;vertical-align:middle;}
+.pid{font-family:var(--mono);font-size:11px;color:var(--blue);font-weight:500;}
+.pnm{font-weight:500;}
+.pvd{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* CHIPS */
+.cchip{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;background:var(--blue-s);color:var(--blue);border:1px solid var(--blue-m);}
+.rgchip{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;background:var(--purple-s);color:var(--purple);border:1px solid var(--purple-m);}
+.amtc{font-family:var(--mono);font-size:12px;font-weight:600;}
+
+/* STATUS BADGES */
+.stbadge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;}
+.st-p{background:var(--amber-s);color:var(--amber);border:1px solid var(--amber-m);}
+.st-a{background:var(--green-s);color:var(--green);border:1px solid var(--green-m);}
+.st-r{background:var(--accent-s);color:var(--accent);border:1px solid var(--accent-m);}
+.st-d{background:rgba(122,116,104,.08);color:var(--muted);border:1px solid rgba(122,116,104,.2);}
+.st-t{background:var(--teal-s);color:var(--teal);border:1px solid var(--teal-m);}
+.sdot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+/* INVOICE BADGES */
+.inv-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600;}
+.inv-received{background:var(--blue-s);color:var(--blue);border:1px solid var(--blue-m);}
+.inv-processing{background:var(--amber-s);color:var(--amber);border:1px solid var(--amber-m);}
+.inv-paid{background:var(--green-s);color:var(--green);border:1px solid var(--green-m);}
+.inv-queried{background:var(--accent-s);color:var(--accent);border:1px solid var(--accent-m);}
+.inv-accrual{background:var(--purple-s);color:var(--purple);border:1px solid var(--purple-m);}
+
+/* SAP SOURCE BADGE */
+.sap-badge{display:inline-block;padding:2px 7px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.5px;border:1px solid;}
+.sap-kob1{background:rgba(27,79,138,.08);color:var(--blue);border-color:var(--blue-m);}
+.sap-fagll{background:rgba(15,107,107,.08);color:var(--teal);border-color:var(--teal-m);}
+.sap-manual{background:rgba(122,116,104,.06);color:var(--muted);border-color:var(--rule2);}
+
+/* APPROVAL CHAIN */
+.chain{display:flex;align-items:center;gap:3px;}
+.cn{width:20px;height:20px;border-radius:50%;font-family:var(--mono);font-size:7px;font-weight:600;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--rule2);color:var(--muted);flex-shrink:0;}
+.cn-d{border-color:var(--green);color:var(--green);background:var(--green-s);}
+.cn-a{border-color:var(--amber);color:var(--amber);background:var(--amber-s);}
+.cn-f{border-color:var(--accent);color:var(--accent);background:var(--accent-s);}
+.cl{width:8px;height:1.5px;background:var(--rule2);flex-shrink:0;}
+.cl.d{background:var(--green);}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(14,17,23,.52);backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.ov.open{opacity:1;pointer-events:all;}
+.modal{background:var(--paper);border:1px solid var(--rule2);border-radius:10px;width:780px;max-height:92vh;overflow-y:auto;transform:translateY(14px);transition:transform .2s;box-shadow:0 20px 70px rgba(14,17,23,.3);}
+.ov.open .modal{transform:translateY(0);}
+.mhd{padding:15px 20px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--paper);z-index:1;}
+.mtit{font-family:var(--serif);font-size:20px;font-style:italic;}
+.mcls{background:none;border:1px solid var(--rule2);color:var(--muted);width:26px;height:26px;border-radius:4px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.mcls:hover{border-color:var(--ink);color:var(--ink);}
+.mbd{padding:20px;}
+.mft{padding:12px 20px;border-top:1px solid var(--rule);display:flex;gap:6px;justify-content:flex-end;background:var(--paper2);border-radius:0 0 10px 10px;}
+
+/* FORM */
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg.full{grid-column:1/-1;}
+.fl{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:500;}
+.fi,.fta,.fsel{background:var(--paper2);border:1px solid var(--rule2);border-radius:5px;padding:8px 10px;color:var(--ink);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .12s;width:100%;}
+.fi:focus,.fta:focus,.fsel:focus{border-color:var(--blue);}
+.fi::placeholder,.fta::placeholder{color:var(--muted);}
+.fta{resize:vertical;min-height:56px;}
+.fi[readonly]{color:var(--muted);}
+.fsel{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237A7468'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+
+/* SAP UPLOAD ZONE */
+.sap-source-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.sap-source-card{border:2px solid var(--rule2);border-radius:8px;padding:14px;cursor:pointer;transition:all .15s;text-align:center;background:var(--paper2);}
+.sap-source-card:hover{border-color:var(--blue);background:var(--blue-s);}
+.sap-source-card.active{border-color:var(--teal);background:var(--teal-s);}
+.sap-source-icon{font-size:26px;margin-bottom:6px;}
+.sap-source-name{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.sap-source-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+
+.upload-zone{border:2px dashed var(--rule2);border-radius:8px;padding:22px;text-align:center;cursor:pointer;transition:all .15s;background:var(--paper2);margin-bottom:12px;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:var(--teal-s);}
+.upload-zone input[type=file]{display:none;}
+
+/* CATEGORY GRID */
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.cit{padding:8px 4px;border-radius:5px;border:1px solid var(--rule2);text-align:center;cursor:pointer;transition:all .12s;font-size:10px;color:var(--muted);line-height:1.4;}
+.cit:hover{border-color:var(--blue);color:var(--ink);background:var(--blue-s);}
+.cit.sel{border-color:var(--accent);color:var(--accent);background:var(--accent-s);}
+.cem{font-size:17px;display:block;margin-bottom:2px;}
+
+/* REGION PICKER */
+.rgbox{background:var(--paper2);border:1px solid var(--rule2);border-radius:7px;padding:12px;}
+.rg-group{margin-bottom:10px;}
+.rg-group:last-child{margin-bottom:0;}
+.rg-group-title{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--rule);}
+.rg-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px;}
+.rg-btn{padding:4px 9px;border-radius:4px;border:1px solid var(--rule2);background:var(--paper);font-size:11px;color:var(--muted);cursor:pointer;transition:all .12s;font-weight:500;}
+.rg-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-s);}
+.rg-btn.sel{border-color:var(--purple);color:var(--purple);background:var(--purple-s);font-weight:600;}
+
+/* MONTHLY PHASING */
+.mo-phase-row{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;}
+.mo-cell{display:flex;flex-direction:column;gap:2px;text-align:center;}
+.mo-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);}
+.mo-inp{font-family:var(--mono);font-size:11px;width:100%;border:1px solid var(--rule2);border-radius:3px;padding:4px 2px;background:var(--paper2);color:var(--ink);outline:none;text-align:center;transition:border-color .12s;}
+.mo-inp:focus{border-color:var(--blue);}
+.mo-inp.cur-mo{border-color:var(--accent);background:var(--accent-s);}
+
+/* WF PREVIEW */
+.wfp{background:var(--paper2);border:1px solid var(--rule);border-radius:6px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
+.wfc{display:flex;align-items:center;gap:5px;}
+.wfn{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--muted);font-family:var(--mono);}
+.wfci{width:26px;height:26px;border-radius:50%;border:2px solid var(--rule2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:var(--muted);}
+.wfci.done{border-color:var(--green);color:var(--green);background:var(--green-s);}
+.wfci.cur{border-color:var(--amber);color:var(--amber);background:var(--amber-s);}
+.wfa{font-size:11px;color:var(--rule2);}
+.wfi{font-size:11px;color:var(--muted);line-height:1.5;margin-left:4px;}
+
+/* DETAIL PANEL */
+.dp{position:fixed;right:0;top:55px;bottom:0;width:375px;background:var(--paper);border-left:1px solid var(--rule2);z-index:100;transform:translateX(100%);transition:transform .22s;display:flex;flex-direction:column;}
+.dp.open{transform:translateX(0);}
+.dph{padding:14px 16px 11px;border-bottom:1px solid var(--rule);display:flex;align-items:flex-start;justify-content:space-between;}
+.dpid{font-family:var(--mono);font-size:10px;color:var(--blue);letter-spacing:1px;margin-bottom:2px;}
+.dptit{font-family:var(--serif);font-size:17px;font-style:italic;}
+.dpb{flex:1;overflow-y:auto;padding:14px 16px;}
+.dpr{margin-bottom:12px;}
+.dpl{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.dpv{font-size:12.5px;}
+.dpa{padding:11px 16px;border-top:1px solid var(--rule);background:var(--paper2);display:flex;gap:6px;}
+
+/* TIMELINE */
+.tl{padding-left:12px;border-left:2px solid var(--rule);}
+.tli{position:relative;padding:0 0 10px 12px;}
+.tli::before{content:'';position:absolute;left:-6px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--rule2);border:2px solid var(--paper);}
+.tli.done::before{background:var(--green);}
+.tli.cur::before{background:var(--amber);}
+.tli.fail::before{background:var(--accent);}
+.tln{font-weight:600;font-size:12.5px;}
+.tlm{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* AOP */
+.aop-hero{background:var(--ink);color:var(--paper);border-radius:10px;padding:18px;margin-bottom:18px;}
+.aop-top{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(245,242,235,.1);padding-bottom:13px;margin-bottom:13px;}
+.aop-col{padding-right:12px;}
+.aop-lbl{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,242,235,.32);margin-bottom:3px;}
+.aop-val{font-family:var(--mono);font-size:20px;font-weight:600;line-height:1;}
+.aop-sub{font-size:10px;color:rgba(245,242,235,.28);margin-top:2px;}
+.qtr-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.qcol{background:rgba(245,242,235,.05);border:1px solid rgba(245,242,235,.1);border-radius:6px;padding:9px;}
+.qcol.aq{border-color:var(--accent);background:rgba(200,64,43,.1);}
+.q-lbl{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(245,242,235,.32);margin-bottom:3px;}
+.q-val{font-family:var(--mono);font-size:14px;font-weight:600;margin-bottom:3px;}
+.q-bar{height:3px;background:rgba(245,242,235,.1);border-radius:2px;overflow:hidden;margin-bottom:3px;}
+.q-barfill{height:100%;border-radius:2px;}
+.q-sub{font-size:9px;color:rgba(245,242,235,.25);}
+
+/* ALLOC TABLE */
+.alloc-tbl{width:100%;border-collapse:collapse;}
+.alloc-tbl th{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:2px solid var(--ink);}
+.alloc-tbl td{padding:8px;border-bottom:1px solid var(--rule);font-size:12.5px;vertical-align:middle;}
+.alloc-tbl .tot-row td{background:var(--paper3);font-weight:700;border-top:2px solid var(--ink);font-family:var(--mono);font-size:12px;}
+.pct-inp{font-family:var(--mono);font-size:12px;width:56px;border:1px solid var(--rule2);border-radius:4px;padding:4px 6px;background:var(--paper2);color:var(--blue);outline:none;text-align:right;}
+.pct-inp:focus{border-color:var(--blue);}
+.pct-bar{width:76px;height:6px;background:var(--rule);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:5px;}
+.pct-bar-fill{height:100%;border-radius:3px;background:var(--blue);transition:width .2s;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--rule);margin-bottom:13px;}
+.tab{padding:6px 13px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;white-space:nowrap;}
+.tab:hover{color:var(--ink);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+
+/* DASHBOARD WIDGETS */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.widget{background:var(--paper2);border:1px solid var(--rule);border-radius:8px;padding:14px;}
+.widget-title{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.spark-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.spark-lbl{font-size:12px;width:120px;flex-shrink:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.spark-wrap{flex:1;height:6px;background:var(--rule);border-radius:3px;overflow:hidden;position:relative;}
+.spark-fill{height:100%;border-radius:3px;position:absolute;top:0;left:0;transition:width .3s;}
+.spark-val{font-family:var(--mono);font-size:10px;color:var(--muted);width:68px;text-align:right;flex-shrink:0;}
+
+/* REGION TREE */
+.rg-tree-node{background:var(--paper2);border:1px solid var(--rule);border-radius:8px;margin-bottom:8px;overflow:hidden;}
+.rg-tree-hdr{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .12s;}
+.rg-tree-hdr:hover{background:var(--paper3);}
+.rg-tree-bar{height:4px;background:var(--rule);overflow:hidden;}
+.rg-tree-barfill{height:100%;}
+.rg-children{border-top:1px solid var(--rule);}
+.rg-child{padding:8px 14px 8px 32px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px;}
+.rg-child:last-child{border-bottom:none;}
+.rg-grandchild{padding:7px 14px 7px 50px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px;background:rgba(91,58,138,.03);}
+.rg-grandchild:last-child{border-bottom:none;}
+
+/* ALERTS */
+.alert{background:var(--amber-s);border:1px solid var(--amber-m);border-radius:6px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:var(--amber);}
+.alert.red{background:var(--accent-s);border-color:var(--accent-m);color:var(--accent);}
+.alert.green{background:var(--green-s);border-color:var(--green-m);color:var(--green);}
+.alert.blue{background:var(--blue-s);border-color:var(--blue-m);color:var(--blue);}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(68px);background:var(--ink);color:var(--paper);padding:8px 17px;border-radius:6px;font-size:12px;font-weight:500;z-index:999;transition:transform .22s;border-left:3px solid var(--accent);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.setup-box{background:var(--paper2);border:2px dashed var(--rule2);border-radius:10px;padding:28px;text-align:center;}
+.pos{color:var(--green);font-family:var(--mono);font-size:11px;}
+.neg{color:var(--accent);font-family:var(--mono);font-size:11px;}
+.empty{text-align:center;padding:36px;color:var(--muted);font-size:13px;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--rule2);border-radius:3px;}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-logo">A<span>&amp;</span>P Agent</div>
+  <div class="hd"></div>
+  <div class="hdr-sub">Marketing Finance &amp; Planning</div>
+  <div class="hdr-yr" id="aopYrLabel">AOP 2026</div>
+  <div class="hdr-r">
+    <div class="cur-sw">
+      <div class="cur-opt active" onclick="setCur('INR')">₹ INR</div>
+      <div class="cur-opt" onclick="setCur('USD')">$ USD</div>
+      <div class="cur-opt" onclick="setCur('EUR')">€ EUR</div>
+      <div class="cur-opt" onclick="setCur('GBP')">£ GBP</div>
+      <div class="cur-opt" onclick="setCur('AED')">د AED</div>
+      <div class="cur-opt" onclick="setCur('SGD')">S$ SGD</div>
+    </div>
+    <div class="hd"></div>
+    <div class="hdr-user">Logged in as <strong>Sarah Chen</strong></div>
+    <button class="hbtn ghost" onclick="go('aop')">&#9651; AOP</button>
+    <button class="hbtn" onclick="openModal()">+ New PR</button>
+    <button class="hbtn ghost" onclick="toggleCopilot()">🤖 Copilot</button>
+  </div>
+</header>
+<div class="shell">
+  <nav class="sb">
+    <div class="sb-sec">
+      <div class="sb-lbl">Navigation</div>
+      <div class="si active" id="nav-dashboard" onclick="go('dashboard')"><span class="si-ico">&#9672;</span> Dashboard</div>
+      <div class="si" id="nav-all" onclick="go('all')"><span class="si-ico">&#8801;</span> All Requests <span class="si-badge" id="badgeAll">0</span></div>
+      <div class="si" id="nav-mine" onclick="go('mine')"><span class="si-ico">&#9711;</span> My Requests</div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-lbl">Workflow</div>
+      <div class="si" id="nav-approvals" onclick="go('approvals')"><span class="si-ico">&#9719;</span> Pending Approval <span class="si-badge w" id="badgeAppr">0</span></div>
+      <div class="si" id="nav-approved" onclick="go('approved')"><span class="si-ico">&#10003;</span> Approved</div>
+      <div class="si" id="nav-rejected" onclick="go('rejected')"><span class="si-ico">&#10005;</span> Rejected</div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-lbl">Finance</div>
+      <div class="si" id="nav-invoices" onclick="go('invoices')"><span class="si-ico">&#9641;</span> Invoices &amp; Actuals <span class="si-badge t" id="badgeInv">0</span></div>
+      <div class="si" id="nav-reconcile" onclick="go('reconcile')"><span class="si-ico">&#8771;</span> Reconciliation</div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-lbl">Planning</div>
+      <div class="si" id="nav-aop" onclick="go('aop')"><span class="si-ico">&#9651;</span> Annual Plan <span class="si-badge g">AOP</span></div>
+      <div class="si" id="nav-budget" onclick="go('budget')"><span class="si-ico">&#8771;</span> Budget vs AOP</div>
+      <div class="si" id="nav-regions" onclick="go('regions')"><span class="si-ico">&#9670;</span> Regions</div>
+      <div class="si" id="nav-categories" onclick="go('categories')"><span class="si-ico">&#9647;</span> Categories</div>
+    </div>
+  </nav>
+  <main class="main" id="MV"></main>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="dp" id="DP">
+  <div class="dph"><div><div class="dpid" id="dpId"></div><div class="dptit" id="dpTit"></div></div><button class="mcls" onclick="closeDetail()">&#10005;</button></div>
+  <div class="dpb" id="dpB"></div>
+  <div class="dpa" id="dpA"></div>
+</div>
+
+<!-- NEW PR MODAL -->
+<div class="ov" id="OV">
+  <div class="modal">
+    <div class="mhd"><div class="mtit">New Purchase Request</div><button class="mcls" onclick="closeModal()">&#10005;</button></div>
+    <div class="mbd">
+      <div class="fg2" style="margin-bottom:11px;">
+        <div class="fg"><label class="fl">PR Title *</label><input class="fi" id="fT" placeholder="e.g. Q3 Digital Campaign"/></div>
+        <div class="fg"><label class="fl">Vendor *</label><input class="fi" id="fV" placeholder="e.g. Meta Ads"/></div>
+      </div>
+      <div class="fg3" style="margin-bottom:11px;">
+        <div class="fg"><label class="fl">Amount (<span id="fAmtCurLbl">₹</span>) *</label><input class="fi" id="fA" type="number" min="0" placeholder="0"/></div>
+        <div class="fg"><label class="fl">Required By</label><input class="fi" id="fDate" type="date"/></div>
+        <div class="fg"><label class="fl">Campaign</label><input class="fi" id="fCp" placeholder="e.g. Diwali 2026"/></div>
+      </div>
+      <div class="fg2" style="margin-bottom:11px;">
+        <div class="fg"><label class="fl">Cost Centre</label><input class="fi" id="fCc" placeholder="e.g. MKT-001"/></div>
+        <div class="fg"><label class="fl">Requested By</label><input class="fi" id="fBy" value="Sarah Chen" readonly/></div>
+      </div>
+      <div class="fg" style="margin-bottom:11px;">
+        <label class="fl">Region *</label>
+        <div class="rgbox" id="rgBox"></div>
+        <div id="rgSelected" style="margin-top:5px;font-size:11px;color:var(--muted);"></div>
+      </div>
+      <div class="fg" style="margin-bottom:11px;">
+        <label class="fl">A&amp;P Category * — Select one of 13</label>
+        <div class="cgrid" id="CG"></div>
+        <div id="aopHint" style="margin-top:6px;font-size:11px;display:none;padding:7px 10px;background:var(--paper2);border:1px solid var(--rule);border-radius:5px;line-height:1.6;"></div>
+      </div>
+      <div class="fg" style="margin-bottom:11px;">
+        <label class="fl">Monthly Phasing (%)</label>
+        <div class="mo-phase-row" id="moPhaseCells"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;">
+          <span id="phaseSumMsg" style="font-family:var(--mono);font-size:11px;"></span>
+          <button class="btn btn-s" style="font-size:11px;padding:3px 9px;" onclick="distributePhase()">&#8635; Even</button>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:11px;">
+        <label class="fl">Business Justification *</label>
+        <textarea class="fta" id="fJ" placeholder="Why is this needed? Expected ROI..."></textarea>
+      </div>
+      <div class="fg">
+        <label class="fl">3-Level Approval Workflow</label>
+        <div class="wfp">
+          <div class="wfc">
+            <div class="wfn"><div class="wfci done">MGR</div><span>Manager</span></div>
+            <div class="wfa">&#8594;</div>
+            <div class="wfn"><div class="wfci cur">MKT</div><span>Mktg Head</span></div>
+            <div class="wfa">&#8594;</div>
+            <div class="wfn"><div class="wfci">FIN</div><span>Finance</span></div>
+          </div>
+          <div class="wfi">3-level approval required.<br>Manager pre-approved &rarr; <strong>Marketing Head</strong> &rarr; Finance.</div>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-s" onclick="saveDraft()">Save as Draft</button>
+      <button class="btn btn-p" onclick="submitPR()">Submit for Approval &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE / ACTUALS UPLOAD MODAL -->
+<div class="ov" id="UPOV">
+  <div class="modal" style="width:820px;">
+    <div class="mhd"><div class="mtit" id="upModalTitle">Load SAP Data</div><button class="mcls" onclick="closeUploadModal()">&#10005;</button></div>
+    <div class="mbd">
+      <!-- SAP source selection -->
+      <div class="sap-source-grid">
+        <div class="sap-source-card active" id="src-kob1" onclick="setSapSrc('kob1')">
+          <div class="sap-source-icon">📋</div>
+          <div class="sap-source-name">SAP KOB1</div>
+          <div class="sap-source-desc">Purchase Orders &amp; Commitments<br>Internal Orders report</div>
+        </div>
+        <div class="sap-source-card" id="src-fagll03" onclick="setSapSrc('fagll03')">
+          <div class="sap-source-icon">📊</div>
+          <div class="sap-source-name">SAP FAGLL03</div>
+          <div class="sap-source-desc">G/L Account Line Items<br>Actuals &amp; Postings</div>
+        </div>
+        <div class="sap-source-card" id="src-manual" onclick="setSapSrc('manual')">
+          <div class="sap-source-icon">✏️</div>
+          <div class="sap-source-name">Manual Entry</div>
+          <div class="sap-source-desc">Add individual invoice<br>or actual entry</div>
+        </div>
+      </div>
+
+      <!-- SAP format guidance -->
+      <div id="sapFormatGuide" style="background:var(--paper3);border:1px solid var(--rule);border-radius:7px;padding:13px;margin-bottom:14px;font-size:12px;">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">KOB1 — Expected columns</div>
+        <code style="font-family:var(--mono);font-size:10px;line-height:1.7;display:block;color:var(--ink);">Order | Document | Reference | Posting Date | Document Date | Amount | Currency | Cost Element | CO Area | Text</code>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted);">Export from SAP: KOB1 &rarr; Execute &rarr; List &rarr; Export &rarr; Spreadsheet (.xlsx or .csv)</div>
+      </div>
+
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleFileDrop(event)">
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.txt" onchange="handleFileSelect(event)"/>
+        <div style="font-size:28px;margin-bottom:8px;">&#128196;</div>
+        <div style="font-weight:600;font-size:13px;margin-bottom:3px;">Drop SAP export here or click to browse</div>
+        <div style="font-size:12px;color:var(--muted);">Supports .csv, .xlsx, .xls, .txt (tab-delimited)</div>
+      </div>
+
+      <div id="uploadPreview" style="display:none;"></div>
+
+      <!-- Column mapping (shown after file load) -->
+      <div id="colMapping" style="display:none;margin-top:14px;">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Map Columns</div>
+        <div class="fg3">
+          <div class="fg"><label class="fl">Invoice / Document #</label><select class="fsel" id="mapDoc"></select></div>
+          <div class="fg"><label class="fl">Amount</label><select class="fsel" id="mapAmt"></select></div>
+          <div class="fg"><label class="fl">Posting Date</label><select class="fsel" id="mapDate"></select></div>
+          <div class="fg"><label class="fl">Vendor / Text</label><select class="fsel" id="mapVendor"></select></div>
+          <div class="fg"><label class="fl">Cost Centre / Order</label><select class="fsel" id="mapCC"></select></div>
+          <div class="fg"><label class="fl">GL / Cost Element</label><select class="fsel" id="mapGL"></select></div>
+        </div>
+        <div class="fg2" style="margin-top:10px;">
+          <div class="fg"><label class="fl">Default Status</label><select class="fsel" id="mapStatus"><option value="received">Received</option><option value="processing">Processing</option><option value="paid" selected>Paid</option><option value="accrual">Accrual</option></select></div>
+          <div class="fg"><label class="fl">Link to PR (optional)</label><select class="fsel" id="mapPR"><option value="">-- Auto-match by Cost Centre --</option></select></div>
+        </div>
+      </div>
+
+      <!-- Manual entry form -->
+      <div id="manualEntryForm" style="display:none;margin-top:2px;">
+        <div class="fg3" style="margin-bottom:11px;">
+          <div class="fg"><label class="fl">Invoice / Doc # *</label><input class="fi" id="mNum" placeholder="e.g. INV-2026-001"/></div>
+          <div class="fg"><label class="fl">Invoice Date *</label><input class="fi" id="mDate" type="date"/></div>
+          <div class="fg"><label class="fl">Due Date</label><input class="fi" id="mDue" type="date"/></div>
+        </div>
+        <div class="fg3" style="margin-bottom:11px;">
+          <div class="fg"><label class="fl">Amount (<span id="mAmtCurLbl">₹</span>) *</label><input class="fi" id="mAmt" type="number" min="0" placeholder="0"/></div>
+          <div class="fg"><label class="fl">Month</label>
+            <select class="fsel" id="mMonth">
+              <option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4" selected>May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Status</label>
+            <select class="fsel" id="mStatus">
+              <option value="received">Received</option><option value="processing">Processing</option><option value="paid">Paid</option><option value="queried">Queried</option><option value="accrual">Accrual</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg3" style="margin-bottom:11px;">
+          <div class="fg"><label class="fl">Vendor</label><input class="fi" id="mVendor" placeholder="e.g. Google LLC"/></div>
+          <div class="fg"><label class="fl">GL / Cost Element</label><input class="fi" id="mGL" placeholder="e.g. 6200-DIG"/></div>
+          <div class="fg"><label class="fl">SAP Source</label><select class="fsel" id="mSapSrc"><option value="kob1">KOB1</option><option value="fagll03">FAGLL03</option><option value="manual">Manual</option></select></div>
+        </div>
+        <div class="fg2" style="margin-bottom:11px;">
+          <div class="fg"><label class="fl">Paid Date</label><input class="fi" id="mPaidDate" type="date"/></div>
+          <div class="fg"><label class="fl">Link to PR</label>
+            <select class="fsel" id="mPR"><option value="">-- None --</option></select>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Notes</label><textarea class="fta" id="mNotes" style="min-height:44px;" placeholder="Optional notes..."></textarea></div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-s" onclick="closeUploadModal()">Cancel</button>
+      <button class="btn btn-teal" id="upConfirmBtn" onclick="confirmUpload()" style="display:none;">&#10003; Import Data</button>
+      <button class="btn btn-teal" id="manualSaveBtn" onclick="saveManual()" style="display:none;">&#9641; Save Entry</button>
+      <button class="btn btn-s" id="upExportBtn" onclick="exportInvCSV()">&#8681; Export CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- AOP SETUP MODAL -->
+<div class="ov" id="AOPOV">
+  <div class="modal" style="width:800px;">
+    <div class="mhd"><div class="mtit">Configure Annual Operating Plan</div><button class="mcls" onclick="closeAopModal()">&#10005;</button></div>
+    <div class="mbd">
+      <div class="fg2" style="margin-bottom:14px;">
+        <div class="fg"><label class="fl">Financial Year</label><select class="fsel" id="aopYear"><option>2026</option><option>2027</option><option>2028</option></select></div>
+        <div class="fg"><label class="fl">Total A&amp;P Budget (<span id="aopCurLbl">₹</span>) *</label><input class="fi" id="aopTotal" type="number" min="0" placeholder="e.g. 12000000" oninput="onAllocInput()"/></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+        <label class="fl" style="margin:0;">Category Allocation % — must sum to 100%</label>
+        <div style="display:flex;gap:5px;">
+          <button class="btn btn-blue" style="font-size:11px;padding:4px 9px;" onclick="applyPreset('digital')">📱 Digital-First</button>
+          <button class="btn btn-s" style="font-size:11px;padding:4px 9px;" onclick="applyPreset('balanced')">⚖️ Balanced</button>
+          <button class="btn btn-s" style="font-size:11px;padding:4px 9px;" onclick="applyPreset('brand')">📺 Brand-Heavy</button>
+        </div>
+      </div>
+      <table class="alloc-tbl">
+        <thead><tr><th style="width:28px;"></th><th>Category</th><th style="width:90px;">Alloc %</th><th>Visual</th><th style="width:130px;">Annual Amount</th></tr></thead>
+        <tbody id="allocBody"></tbody>
+        <tfoot><tr class="tot-row"><td></td><td>Total</td><td id="allocPctTot"></td><td></td><td id="allocAmtTot"></td></tr></tfoot>
+      </table>
+      <div id="allocMsg" style="font-size:11px;margin-top:6px;font-family:var(--mono);"></div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-s" onclick="closeAopModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveAop()">&#9651; Save AOP</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="TOAST"></div>
+
+// ════════════════════════════════════════════════════════════
+//  COPILOT PANEL
+// ════════════════════════════════════════════════════════════
+<!-- COPILOT PANEL -->
+<div class="cp" id="CP">
+  <div class="cph">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="font-weight:700;">Copilot</div>
+      <div class="cp-pill" id="cpModePill">Smart</div>
+    </div>
+
+    <div style="display:flex;gap:6px;align-items:center;">
+      <select class="cpMode" id="cpMode" onchange="setCopilotMode(this.value)">
+        <option value="smart" selected>Smart</option>
+        <option value="quick">Quick</option>
+        <option value="deep">Think deeper</option>
+      </select>
+      <button class="mcls" onclick="toggleCopilot()">✕</button>
+    </div>
+  </div>
+
+  <div class="cpb" id="cpBody">
+    <!-- Welcome + starters -->
+    <div id="cpWelcome" class="cpWelcome">
+      <div class="cpHeroTitle">Your A&P Finance Copilot</div>
+      <div class="cpHeroSub">
+        Ask about PRs, approvals, invoices/actuals, AOP budget usage, variances, and reconciliations.
+      </div>
+
+      <div class="cpChipRow" id="cpStarters"></div>
+
+      <div class="cpMiniNote">
+        Tip: try “Pending approvals in Western Europe” or “Digital Media budget remaining”.
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="cpMsgs" id="cpMsgs"></div>
+  </div>
+
+  <div class="cpf">
+    <div class="cpAttach">
+      <button class="cpIconBtn" title="Suggested prompts" onclick="openPromptGallery()">＋</button>
+      <button class="cpIconBtn" title="Clear chat" onclick="clearCopilot()">🧹</button>
+    </div>
+
+    <div class="cpComposer">
+      <textarea id="cpInput" class="cpInput" rows="1" placeholder="Ask Copilot…"
+        onkeydown="cpHandleKey(event)"></textarea>
+      <button class="cpSend" id="cpSend" onclick="cpSend()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  CURRENCY
+// ════════════════════════════════════════════════════════════
+const CURRENCIES={INR:{sym:'₹',rate:1,locale:'en-IN'},USD:{sym:'$',rate:0.012,locale:'en-US'},EUR:{sym:'€',rate:0.011,locale:'de-DE'},GBP:{sym:'£',rate:0.0095,locale:'en-GB'},AED:{sym:'د.إ',rate:0.044,locale:'ar-AE'},SGD:{sym:'S$',rate:0.016,locale:'en-SG'}};
+let CUR='INR';
+function setCur(c){CUR=c;document.querySelectorAll('.cur-opt').forEach(el=>el.classList.toggle('active',el.textContent.includes(c)));['fAmtCurLbl','aopCurLbl','mAmtCurLbl'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=CURRENCIES[c].sym;});onAllocInput();render();}
+function toD(v){return v*CURRENCIES[CUR].rate;}
+function fmt(v){const n=toD(v),c=CURRENCIES[CUR];if(Math.abs(n)>=1e6)return c.sym+(n/1e6).toFixed(2)+'M';if(Math.abs(n)>=1e3)return c.sym+(n/1e3).toFixed(1)+'K';return c.sym+Math.round(n).toLocaleString(c.locale);}
+function fmtFull(v){const n=toD(v),c=CURRENCIES[CUR];return c.sym+n.toLocaleString(c.locale,{maximumFractionDigits:0});}
+function fmtK(v){const n=toD(v),c=CURRENCIES[CUR];if(Math.abs(n)>=1e6)return c.sym+(n/1e6).toFixed(2)+'M';if(Math.abs(n)>=1e3)return c.sym+(n/1e3).toFixed(1)+'K';return c.sym+Math.round(n);}
+function fromD(v){return v/CURRENCIES[CUR].rate;}
+
+// ════════════════════════════════════════════════════════════
+//  REGION HIERARCHY
+// ════════════════════════════════════════════════════════════
+const RT=[{id:'na',label:'North America',icon:'🌎',children:null},{id:'china',label:'China',icon:'🇨🇳',children:null},{id:'intl',label:'International',icon:'🌍',children:[{id:'europe',label:'Europe',icon:'🇪🇺',children:[{id:'cee',label:'Central & Eastern Europe',icon:'🏛️'},{id:'we',label:'Western Europe',icon:'🗼'}]},{id:'other_regions',label:'Other Regions',icon:'🌐',children:null}]}];
+function collectLeaves(n,a){if(!n.children||!n.children.length){a.push(n.id);}else{n.children.forEach(c=>collectLeaves(c,a));}}
+function getSubIds(id){const r=[];function find(ns){for(const n of ns){if(n.id===id){collectLeaves(n,r);return true;}if(n.children&&find(n.children))return true;}return false;}find(RT);return r.length?r:[id];}
+const LEAF_REGIONS=(()=>{const r=[];function walk(ns,p){ns.forEach(n=>{const pp=[...p,n.label];if(!n.children||!n.children.length)r.push({id:n.id,label:n.label,icon:n.icon,path:pp});else walk(n.children,pp);});}walk(RT,[]);return r;})();
+function regionPath(id){const r=LEAF_REGIONS.find(r=>r.id===id);return r?r.path.join(' › '):'—';}
+function regionLabel(id){const r=LEAF_REGIONS.find(r=>r.id===id);return r?`${r.icon} ${r.label}`:'—';}
+
+// ════════════════════════════════════════════════════════════
+//  CONSTANTS
+// ════════════════════════════════════════════════════════════
+const CATS=[{id:'digital',em:'📱',label:'Digital Media'},{id:'events',em:'🎪',label:'Events'},{id:'print',em:'🖨️',label:'Print'},{id:'ooh',em:'🏙️',label:'OOH / Outdoor'},{id:'tv',em:'📺',label:'TV / Radio'},{id:'influencer',em:'🌟',label:'Influencer'},{id:'pr',em:'📣',label:'PR / Media'},{id:'sponsorship',em:'🤝',label:'Sponsorship'},{id:'production',em:'🎬',label:'Production'},{id:'research',em:'🔬',label:'Research'},{id:'merch',em:'🛍️',label:'Merchandise'},{id:'agency',em:'🏢',label:'Agency Fees'},{id:'other',em:'📦',label:'Other'}];
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const QTR_MONTHS=[[0,1,2],[3,4,5],[6,7,8],[9,10,11]];
+const CURRENT_MONTH=4,CURRENT_QTR=1;
+const INV_STATUSES=['received','processing','paid','queried','accrual'];
+const PRESETS={
+  digital:{'Digital Media':28,'Events':8,'Print':4,'OOH / Outdoor':5,'TV / Radio':7,'Influencer':12,'PR / Media':6,'Sponsorship':5,'Production':8,'Research':4,'Merchandise':3,'Agency Fees':8,'Other':2},
+  balanced:{'Digital Media':18,'Events':8,'Print':6,'OOH / Outdoor':8,'TV / Radio':10,'Influencer':8,'PR / Media':7,'Sponsorship':7,'Production':9,'Research':5,'Merchandise':4,'Agency Fees':8,'Other':2},
+  brand:{'Digital Media':13,'Events':6,'Print':7,'OOH / Outdoor':14,'TV / Radio':18,'Influencer':6,'PR / Media':8,'Sponsorship':8,'Production':9,'Research':4,'Merchandise':3,'Agency Fees':5,'Other':2}
+};
+(()=>{const b=PRESETS.brand;const t=Object.values(b).reduce((s,v)=>s+v,0);if(Math.abs(t-100)>0.01)Object.keys(b).forEach(k=>b[k]=Math.round(b[k]/t*1000)/10);})();
+let workingAlloc={...PRESETS.digital};
+
+// ════════════════════════════════════════════════════════════
+//  AOP STATE
+// ════════════════════════════════════════════════════════════
+let AOP=null;
+function buildAOP(year,totalINR,allocPct){
+  const qPct=[22,28,20,30];
+  const allocations={};
+  CATS.forEach(c=>{const pct=allocPct[c.label]||0;const annual=Math.round(totalINR*pct/100);allocations[c.label]={pct,annual,quarterly:qPct.map(qp=>Math.round(annual*qp/100))};});
+  return{year,total:totalINR,allocPct,allocations,totalQuarterly:qPct.map(qp=>Math.round(totalINR*qp/100)),qPct};
+}
+AOP=buildAOP(2026,12000000,PRESETS.digital);
+
+// ════════════════════════════════════════════════════════════
+//  PR DATA
+// ════════════════════════════════════════════════════════════
+function makePhase(mo){const a=Array(12).fill(0);a[mo]=100;return a;}
+let PRS=[
+  {id:'PR-2026-031',title:'Q1 Meta & Instagram Ads',vendor:'Meta Platforms',cat:'Digital Media',amount:195000,status:'approved',campaign:'Q1 Growth',cc:'MKT-001',date:'2026-01-20',just:'Q1 awareness and performance mix.',steps:[1,1,1],sdates:['2026-01-05','2026-01-08','2026-01-10'],by:'Sarah Chen',on:'2026-01-04',region:'na',monthlyPhase:makePhase(0)},
+  {id:'PR-2026-032',title:'Print Campaign — Business Dailies',vendor:'HT Media',cat:'Print',amount:55000,status:'approved',campaign:'Q1 Brand',cc:'MKT-001',date:'2026-02-10',just:'Half-page insertions in ET and HT.',steps:[1,1,1],sdates:['2026-01-25','2026-01-28','2026-02-01'],by:'Raj Patel',on:'2026-01-24',region:'we',monthlyPhase:makePhase(1)},
+  {id:'PR-2026-033',title:'Agency Retainer — Q1',vendor:'JWT India',cat:'Agency Fees',amount:180000,status:'approved',campaign:'Ongoing',cc:'MKT-007',date:'2026-01-01',just:'Monthly creative agency retainer.',steps:[1,1,1],sdates:['2025-12-20','2025-12-22','2025-12-26'],by:'Sarah Chen',on:'2025-12-19',region:'china',monthlyPhase:[34,33,33,0,0,0,0,0,0,0,0,0]},
+  {id:'PR-2026-034',title:'PR Retainer — Jan–Mar',vendor:'Adfactors PR',cat:'PR / Media',amount:120000,status:'approved',campaign:'Ongoing',cc:'MKT-008',date:'2026-01-01',just:'Quarterly PR agency retainer.',steps:[1,1,1],sdates:['2025-12-20','2025-12-22','2025-12-26'],by:'Priya Menon',on:'2025-12-19',region:'cee',monthlyPhase:[34,33,33,0,0,0,0,0,0,0,0,0]},
+  {id:'PR-2026-035',title:'Events — Industry Conclave Q1',vendor:'E-Factor Events',cat:'Events',amount:220000,status:'approved',campaign:'Thought Leadership',cc:'MKT-002',date:'2026-03-15',just:'Flagship industry conference.',steps:[1,1,1],sdates:['2026-02-10','2026-02-14','2026-02-18'],by:'Sarah Chen',on:'2026-02-09',region:'other_regions',monthlyPhase:makePhase(2)},
+  {id:'PR-2026-041',title:'Google Search Ads — Q2',vendor:'Google LLC',cat:'Digital Media',amount:285000,status:'approved',campaign:'Summer Sale',cc:'MKT-001',date:'2026-04-20',just:'Sustain Q2 search visibility. 4x ROAS expected.',steps:[1,1,1],sdates:['2026-04-10','2026-04-12','2026-04-15'],by:'Sarah Chen',on:'2026-04-08',region:'na',monthlyPhase:makePhase(3)},
+  {id:'PR-2026-042',title:'Influencer Package — Fashion Week',vendor:'TalentCo Agency',cat:'Influencer',amount:175000,status:'pending',campaign:'Brand Launch',cc:'MKT-002',date:'2026-05-05',just:'10 micro-influencers for new product launch.',steps:[1,0,0],sdates:['2026-04-28',null,null],by:'Sarah Chen',on:'2026-04-26',region:'we',monthlyPhase:[0,0,0,0,50,50,0,0,0,0,0,0]},
+  {id:'PR-2026-043',title:'Billboard Placement — CEE',vendor:'Outdoor Ads Europe',cat:'OOH / Outdoor',amount:95000,status:'pending',campaign:'Q2 Awareness',cc:'MKT-001',date:'2026-05-10',just:'Billboard sites in Warsaw and Prague.',steps:[1,1,0],sdates:['2026-04-25','2026-04-29',null],by:'Raj Patel',on:'2026-04-23',region:'cee',monthlyPhase:makePhase(4)},
+  {id:'PR-2026-044',title:'Product Launch Hero Video',vendor:'Studio Motion',cat:'Production',amount:420000,status:'rejected',campaign:'New Product',cc:'MKT-003',date:'2026-04-15',just:'Brand hero film across TVC, digital and social.',steps:[1,-1,0],sdates:['2026-04-02','2026-04-05',null],by:'Sarah Chen',on:'2026-04-01',region:'china',monthlyPhase:makePhase(3)},
+  {id:'PR-2026-045',title:'Consumer Brand Health Research',vendor:'Kantar',cat:'Research',amount:150000,status:'draft',campaign:'Brand Health',cc:'MKT-004',date:'2026-05-30',just:'Quarterly brand tracking across 4 metros.',steps:[0,0,0],sdates:[null,null,null],by:'Priya Menon',on:'2026-04-30',region:'na',monthlyPhase:makePhase(4)},
+  {id:'PR-2026-046',title:'Diwali Gifting Merchandise',vendor:'PrintKart India',cat:'Merchandise',amount:68000,status:'approved',campaign:'Diwali 2026',cc:'MKT-005',date:'2026-04-18',just:'Branded kits for 200 trade partners.',steps:[1,1,1],sdates:['2026-04-10','2026-04-12','2026-04-14'],by:'Sarah Chen',on:'2026-04-09',region:'other_regions',monthlyPhase:makePhase(3)},
+  {id:'PR-2026-047',title:'IPL Sponsorship — Digital Rights',vendor:'BCCI Digital',cat:'Sponsorship',amount:350000,status:'pending',campaign:'IPL 2026',cc:'MKT-006',date:'2026-05-15',just:'Logo placement + 10 ad slots across IPL.',steps:[1,1,0],sdates:['2026-04-22','2026-04-25',null],by:'Raj Patel',on:'2026-04-20',region:'na',monthlyPhase:[0,0,0,25,25,25,25,0,0,0,0,0]},
+  {id:'PR-2026-048',title:'Agency Retainer — Q2',vendor:'JWT India',cat:'Agency Fees',amount:180000,status:'approved',campaign:'Ongoing',cc:'MKT-007',date:'2026-04-01',just:'Creative agency monthly retainer.',steps:[1,1,1],sdates:['2026-03-25','2026-03-27','2026-03-29'],by:'Sarah Chen',on:'2026-03-24',region:'china',monthlyPhase:[0,0,0,34,33,33,0,0,0,0,0,0]},
+];
+
+// ════════════════════════════════════════════════════════════
+//  INVOICE DATA — with SAP source tagging
+//  sapSource: 'kob1' | 'fagll03' | 'manual'
+// ════════════════════════════════════════════════════════════
+let INVOICES=[
+  {id:'INV-001',prId:'PR-2026-031',vendor:'Meta Platforms',num:'500012841',date:'2026-01-22',due:'2026-02-22',amount:195000,status:'paid',month:0,gl:'6200-DIG',vendorRef:'PO-4400',notes:'Full payment Q1 campaign.',paidDate:'2026-02-10',sapSource:'kob1',sapOrder:'ORD-2026-001',sapDocType:'RE'},
+  {id:'INV-002',prId:'PR-2026-032',vendor:'HT Media',num:'500013102',date:'2026-02-12',due:'2026-03-12',amount:55000,status:'paid',month:1,gl:'6210-PRT',vendorRef:'PO-4401',notes:'Print insertions Feb.',paidDate:'2026-03-01',sapSource:'fagll03',sapOrder:'',sapDocType:'SA'},
+  {id:'INV-003',prId:'PR-2026-033',vendor:'JWT India',num:'500013201',date:'2026-01-05',due:'2026-02-05',amount:60000,status:'paid',month:0,gl:'6300-AGY',vendorRef:'PO-4402',notes:'Jan retainer.',paidDate:'2026-01-28',sapSource:'kob1',sapOrder:'ORD-2026-003',sapDocType:'RE'},
+  {id:'INV-004',prId:'PR-2026-033',vendor:'JWT India',num:'500013850',date:'2026-02-05',due:'2026-03-05',amount:60000,status:'paid',month:1,gl:'6300-AGY',vendorRef:'PO-4402',notes:'Feb retainer.',paidDate:'2026-02-26',sapSource:'kob1',sapOrder:'ORD-2026-003',sapDocType:'RE'},
+  {id:'INV-005',prId:'PR-2026-033',vendor:'JWT India',num:'500014420',date:'2026-03-05',due:'2026-04-05',amount:60000,status:'paid',month:2,gl:'6300-AGY',vendorRef:'PO-4402',notes:'Mar retainer.',paidDate:'2026-03-28',sapSource:'kob1',sapOrder:'ORD-2026-003',sapDocType:'RE'},
+  {id:'INV-006',prId:'PR-2026-034',vendor:'Adfactors PR',num:'500013310',date:'2026-01-08',due:'2026-02-08',amount:40000,status:'paid',month:0,gl:'6400-PR',vendorRef:'PO-4403',notes:'Jan PR retainer.',paidDate:'2026-01-30',sapSource:'fagll03',sapOrder:'',sapDocType:'SA'},
+  {id:'INV-007',prId:'PR-2026-034',vendor:'Adfactors PR',num:'500013980',date:'2026-02-08',due:'2026-03-08',amount:40000,status:'paid',month:1,gl:'6400-PR',vendorRef:'PO-4403',notes:'Feb PR retainer.',paidDate:'2026-02-28',sapSource:'fagll03',sapOrder:'',sapDocType:'SA'},
+  {id:'INV-008',prId:'PR-2026-034',vendor:'Adfactors PR',num:'500014560',date:'2026-03-08',due:'2026-04-08',amount:40000,status:'paid',month:2,gl:'6400-PR',vendorRef:'PO-4403',notes:'Mar PR retainer.',paidDate:'2026-04-01',sapSource:'fagll03',sapOrder:'',sapDocType:'SA'},
+  {id:'INV-009',prId:'PR-2026-035',vendor:'E-Factor Events',num:'500014890',date:'2026-03-16',due:'2026-04-16',amount:220000,status:'paid',month:2,gl:'6500-EVT',vendorRef:'PO-4404',notes:'Full event invoice.',paidDate:'2026-04-12',sapSource:'kob1',sapOrder:'ORD-2026-005',sapDocType:'RE'},
+  {id:'INV-010',prId:'PR-2026-041',vendor:'Google LLC',num:'500015230',date:'2026-04-25',due:'2026-05-25',amount:285000,status:'processing',month:3,gl:'6200-DIG',vendorRef:'PO-4410',notes:'Q2 Google Ads — 30-day terms.',paidDate:null,sapSource:'kob1',sapOrder:'ORD-2026-006',sapDocType:'RE'},
+  {id:'INV-011',prId:'PR-2026-046',vendor:'PrintKart India',num:'500015410',date:'2026-04-19',due:'2026-05-19',amount:68000,status:'received',month:3,gl:'6600-MRC',vendorRef:'PO-4411',notes:'Merchandise invoice — pending GRN.',paidDate:null,sapSource:'manual',sapOrder:'',sapDocType:''},
+  {id:'INV-012',prId:'PR-2026-048',vendor:'JWT India',num:'500015180',date:'2026-04-05',due:'2026-05-05',amount:60000,status:'paid',month:3,gl:'6300-AGY',vendorRef:'PO-4402',notes:'Apr retainer.',paidDate:'2026-04-28',sapSource:'kob1',sapOrder:'ORD-2026-003',sapDocType:'RE'},
+  {id:'INV-013',prId:'PR-2026-048',vendor:'JWT India',num:'500015890',date:'2026-05-05',due:'2026-06-05',amount:60000,status:'received',month:4,gl:'6300-AGY',vendorRef:'PO-4402',notes:'May retainer invoice received.',paidDate:null,sapSource:'kob1',sapOrder:'ORD-2026-003',sapDocType:'RE'},
+  {id:'INV-014',prId:'PR-2026-048',vendor:'JWT India',num:'ACCRUAL-JUN-AGY',date:'2026-05-30',due:null,amount:60000,status:'accrual',month:5,gl:'6300-AGY',vendorRef:'',notes:'Jun retainer accrual — invoice expected early Jul.',paidDate:null,sapSource:'manual',sapOrder:'',sapDocType:''},
+];
+
+let selCat=null,selRegion=null,curView='dashboard',openId=null;
+let prMonthlyPhase=Array(12).fill(0);
+let parsedFileRows=null,parsedHeaders=[];
+let activeSapSrc='kob1';
+
+// ════════════════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════════════════
+function catO(l){return CATS.find(c=>c.label===l)||{em:'📦',label:l};}
+function today(){return new Date().toISOString().slice(0,10);}
+function nextPRId(){return'PR-2026-0'+(60+PRS.length);}
+function nextInvId(){return'INV-'+String(INVOICES.length+1).padStart(3,'0');}
+function pc(v,t){return t?Math.round(v/t*100):0;}
+function progColor(p){return p>100?'var(--accent)':p>80?'var(--amber)':'var(--green)';}
+function sbadge(st){return{approved:`<span class="stbadge st-a"><span class="sdot"></span>Approved</span>`,pending:`<span class="stbadge st-p"><span class="sdot"></span>Pending</span>`,rejected:`<span class="stbadge st-r"><span class="sdot"></span>Rejected</span>`,draft:`<span class="stbadge st-d"><span class="sdot"></span>Draft</span>`}[st]||'';}
+function invBadge(st){const m={received:`<span class="inv-badge inv-received"><span class="sdot"></span>Received</span>`,processing:`<span class="inv-badge inv-processing"><span class="sdot"></span>Processing</span>`,paid:`<span class="inv-badge inv-paid"><span class="sdot"></span>Paid</span>`,queried:`<span class="inv-badge inv-queried"><span class="sdot"></span>Queried</span>`,accrual:`<span class="inv-badge inv-accrual"><span class="sdot"></span>Accrual</span>`};return m[st]||'';}
+function sapBadge(src){return{kob1:`<span class="sap-badge sap-kob1">KOB1</span>`,fagll03:`<span class="sap-badge sap-fagll">FAGLL03</span>`,manual:`<span class="sap-badge sap-manual">Manual</span>`}[src]||`<span class="sap-badge sap-manual">${src||'—'}</span>`;}
+function chainH(steps){const L=['MGR','MKT','FIN'];let h='<div class="chain">';steps.forEach((s,i)=>{let c='';if(s===1)c='cn-d';else if(s===-1)c='cn-f';else if(steps.slice(0,i).every(x=>x===1))c='cn-a';h+=`<div class="cn ${c}">${L[i]}</div>`;if(i<2)h+=`<div class="cl${s===1?' d':''}"></div>`;});return h+'</div>';}
+function toast(msg){const t=document.getElementById('TOAST');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function updateBadges(){document.getElementById('badgeAll').textContent=PRS.length;document.getElementById('badgeAppr').textContent=PRS.filter(x=>x.status==='pending').length;document.getElementById('badgeInv').textContent=INVOICES.filter(i=>['received','processing','queried'].includes(i.status)).length;}
+
+// Data helpers
+function getSpend(cat,status='approved'){return PRS.filter(p=>p.cat===cat&&p.status===status).reduce((s,p)=>s+p.amount,0);}
+function getTotalSpend(status='approved'){return PRS.filter(p=>p.status===status).reduce((s,p)=>s+p.amount,0);}
+function getTotalMonthSpend(mo){return PRS.filter(p=>p.status==='approved').reduce((s,p)=>s+p.amount*(p.monthlyPhase[mo]||0)/100,0);}
+function getRegionSpend(id){const ids=getSubIds(id);return PRS.filter(p=>p.status==='approved'&&ids.includes(p.region)).reduce((s,p)=>s+p.amount,0);}
+function getPRInvoiced(prId){return INVOICES.filter(i=>i.prId===prId).reduce((s,i)=>s+i.amount,0);}
+function getPRActuals(prId){return INVOICES.filter(i=>i.prId===prId&&i.status==='paid').reduce((s,i)=>s+i.amount,0);}
+function getTotalInvoiced(){return INVOICES.reduce((s,i)=>s+i.amount,0);}
+function getTotalActuals(){return INVOICES.filter(i=>i.status==='paid').reduce((s,i)=>s+i.amount,0);}
+function getTotalAccruals(){return INVOICES.filter(i=>i.status==='accrual').reduce((s,i)=>s+i.amount,0);}
+function getCatInvoiced(cat){const ids=PRS.filter(p=>p.cat===cat).map(p=>p.id);return INVOICES.filter(i=>ids.includes(i.prId)).reduce((s,i)=>s+i.amount,0);}
+function getCatActuals(cat){const ids=PRS.filter(p=>p.cat===cat).map(p=>p.id);return INVOICES.filter(i=>ids.includes(i.prId)&&i.status==='paid').reduce((s,i)=>s+i.amount,0);}
+function getMonthActuals(mo){return INVOICES.filter(i=>i.month===mo&&i.status==='paid').reduce((s,i)=>s+i.amount,0);}
+function getMonthInvoiced(mo){return INVOICES.filter(i=>i.month===mo).reduce((s,i)=>s+i.amount,0);}
+
+// ════════════════════════════════════════════════════════════
+//  ROUTING
+// ════════════════════════════════════════════════════════════
+function go(v){curView=v;document.querySelectorAll('.si').forEach(e=>e.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');closeDetail();render();}
+function render(){const mv=document.getElementById('MV');
+  if(curView==='dashboard')mv.innerHTML=vDash();
+  else if(curView==='all')mv.innerHTML=vList('all');
+  else if(curView==='mine')mv.innerHTML=vList('mine');
+  else if(curView==='approvals')mv.innerHTML=vList('pending');
+  else if(curView==='approved')mv.innerHTML=vList('approved');
+  else if(curView==='rejected')mv.innerHTML=vList('rejected');
+  else if(curView==='invoices')mv.innerHTML=vInvoices();
+  else if(curView==='reconcile')mv.innerHTML=vReconcile();
+  else if(curView==='aop')mv.innerHTML=vAOP();
+  else if(curView==='budget')mv.innerHTML=vBudget();
+  else if(curView==='regions')mv.innerHTML=vRegions();
+  else if(curView==='categories')mv.innerHTML=vCats();
+}
+
+// ════════════════════════════════════════════════════════════
+//  DASHBOARD — rich finance details
+// ════════════════════════════════════════════════════════════
+function vDash(){
+  const committed=getTotalSpend(),pend=PRS.filter(p=>p.status==='pending').length;
+  const invoiced=getTotalInvoiced(),actuals=getTotalActuals(),accruals=getTotalAccruals();
+  const aopT=AOP?AOP.total:0;
+  const pctC=aopT?pc(committed,aopT):0,pctA=aopT?pc(actuals,aopT):0,pctI=aopT?pc(invoiced,aopT):0;
+  const openInvs=INVOICES.filter(i=>['received','processing'].includes(i.status));
+  const queriedInvs=INVOICES.filter(i=>i.status==='queried');
+  const kob1Count=INVOICES.filter(i=>i.sapSource==='kob1').length;
+  const fagllCount=INVOICES.filter(i=>i.sapSource==='fagll03').length;
+  const manualCount=INVOICES.filter(i=>i.sapSource==='manual').length;
+  const kob1Total=INVOICES.filter(i=>i.sapSource==='kob1').reduce((s,i)=>s+i.amount,0);
+  const fagllTotal=INVOICES.filter(i=>i.sapSource==='fagll03').reduce((s,i)=>s+i.amount,0);
+  let alerts='';
+  if(AOP)CATS.forEach(c=>{const a=AOP.allocations[c.label];if(!a)return;const p=pc(getSpend(c.label),a.annual);if(p>85)alerts+=`<div class="alert${p>100?' red':''}">${c.em} <strong>${c.label}</strong> at <strong>${p}%</strong> of AOP${p>100?' — over budget!':' — nearing limit.'}</div>`;});
+  if(openInvs.length)alerts+=`<div class="alert">&#9641; <strong>${openInvs.length}</strong> invoice${openInvs.length!==1?'s':''} open/processing — <span style="cursor:pointer;text-decoration:underline;" onclick="go('invoices')">review</span></div>`;
+  if(queriedInvs.length)alerts+=`<div class="alert red">&#9888; <strong>${queriedInvs.length}</strong> invoice${queriedInvs.length!==1?'s':''} queried — action required</div>`;
+
+  // Monthly bar chart
+  const maxMo=Math.max(...MONTHS.map((_,i)=>Math.max(getTotalMonthSpend(i),getMonthActuals(i))),1);
+  const monthBars=MONTHS.map((m,i)=>{
+    const plan=getTotalMonthSpend(i),act=getMonthActuals(i),inv=getMonthInvoiced(i);
+    const planH=Math.round(plan/maxMo*50),actH=act?Math.round(act/maxMo*50):0,invH=inv?Math.round(inv/maxMo*50):0;
+    const isCur=i===CURRENT_MONTH;
+    return`<div style="text-align:center;">
+      <div style="font-family:var(--mono);font-size:7px;color:${isCur?'var(--accent)':'rgba(245,242,235,.26)'};margin-bottom:3px;${isCur?'font-weight:700;':''}">${m.slice(0,1)}</div>
+      <div style="height:54px;display:flex;align-items:flex-end;justify-content:center;gap:1px;">
+        <div style="width:7px;height:${planH}px;background:rgba(245,242,235,.13);border-radius:2px 2px 0 0;" title="Plan: ${fmtK(plan)}"></div>
+        ${inv?`<div style="width:7px;height:${invH}px;background:rgba(15,107,107,.65);border-radius:2px 2px 0 0;margin-left:-7px;" title="Invoiced: ${fmtK(inv)}"></div>`:''}
+        ${act?`<div style="width:7px;height:${actH}px;background:var(--green);border-radius:2px 2px 0 0;margin-left:${inv?-7:-7}px;opacity:.85;" title="Actuals: ${fmtK(act)}"></div>`:''}
+      </div>
+      <div style="font-family:var(--mono);font-size:7px;color:${isCur?'var(--accent)':'rgba(245,242,235,.2)'};margin-top:2px;">${fmtK(plan)}</div>
+    </div>`;
+  }).join('');
+
+  // Recent invoices
+  const recentInvs=[...INVOICES].reverse().slice(0,6);
+
+  return`
+  <div class="tb">
+    <div><div class="pg-title">Dashboard<small>FY${AOP?AOP.year:'2026'} &middot; Finance Overview &middot; ${CUR}</small></div></div>
+    <div class="tb-acts">
+      <button class="btn btn-teal" onclick="openUploadModal()">&#9641; Load SAP Data</button>
+      <button class="btn btn-blue" onclick="go('aop')">&#9651; AOP</button>
+      <button class="btn btn-s" onclick="go('all')">All PRs</button>
+      <button class="btn btn-p" onclick="openModal()">+ New PR</button>
+    </div>
+  </div>
+  <div class="ct">
+    <!-- TOP STATS -->
+    <div class="sg sg-6">
+      <div class="sc sc1"><div class="sn">${PRS.length}</div><div class="sl">Total PRs</div><div class="ss">${pend} pending</div></div>
+      <div class="sc sc2"><div class="sn">${fmt(committed)}</div><div class="sl">Committed</div><div class="ss">${pctC}% of AOP</div></div>
+      <div class="sc sc5"><div class="sn">${fmt(invoiced)}</div><div class="sl">Invoiced</div><div class="ss">${INVOICES.length} invoices</div></div>
+      <div class="sc sc3"><div class="sn">${fmt(actuals)}</div><div class="sl">Actuals Paid</div><div class="ss">${pctA}% of AOP</div></div>
+      <div class="sc sc6"><div class="sn">${fmt(accruals)}</div><div class="sl">Accruals</div><div class="ss">${INVOICES.filter(i=>i.status==='accrual').length} entries</div></div>
+      <div class="sc sc4"><div class="sn">${invoiced?pc(actuals,invoiced):0}%</div><div class="sl">Payment Rate</div><div class="ss">Paid / Invoiced</div></div>
+    </div>
+
+    ${alerts}
+
+    <!-- MAIN FINANCE VISUAL -->
+    <div style="background:var(--ink);color:var(--paper);border-radius:10px;padding:18px;margin-bottom:18px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(245,242,235,.1);padding-bottom:13px;margin-bottom:13px;">
+        ${[['AOP Budget',aopT,'rgba(27,79,138,.55)',100],['Committed',committed,'var(--amber)',pctC],['Invoiced',invoiced,'rgba(15,107,107,.9)',pctI],['Actuals (Paid)',actuals,'rgba(26,107,69,.9)',pctA]].map(([lbl,v,color,pct2])=>`<div style="padding-right:12px;"><div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,242,235,.3);margin-bottom:3px;">${lbl}</div><div style="font-family:var(--mono);font-size:19px;font-weight:600;color:${color};">${fmt(v)}</div>${aopT?`<div style="font-size:10px;color:rgba(245,242,235,.25);margin-top:2px;">${pct2}% of AOP</div>`:''}</div>`).join('')}
+      </div>
+      ${[['Committed vs AOP',committed,aopT,'var(--amber)'],['Invoiced vs AOP',invoiced,aopT,'var(--teal)'],['Actuals vs AOP',actuals,aopT,'var(--green)'],['Accruals vs AOP',accruals,aopT,'var(--purple)']].map(([lbl,v,b,color])=>`<div style="display:flex;align-items:center;gap:9px;margin-bottom:7px;"><span style="font-size:11px;color:rgba(245,242,235,.38);width:130px;">${lbl}</span><div style="flex:1;height:7px;background:rgba(245,242,235,.08);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${b?Math.min(100,pc(v,b)):0}%;background:${color};border-radius:3px;"></div></div><span style="font-family:var(--mono);font-size:11px;color:${color};width:72px;text-align:right;">${fmt(v)}</span></div>`).join('')}
+      <!-- MONTHLY BARS -->
+      <div style="margin-top:13px;padding-top:11px;border-top:1px solid rgba(245,242,235,.08);">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,242,235,.25);margin-bottom:7px;">Monthly — Committed plan vs Invoiced vs Actuals</div>
+        <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:3px;">${monthBars}</div>
+        <div style="display:flex;gap:14px;margin-top:7px;font-size:10px;color:rgba(245,242,235,.22);"><span>&#9646; Grey=Plan</span><span style="color:rgba(15,107,107,.6);">&#9646; Teal=Invoiced</span><span style="color:rgba(26,107,69,.6);">&#9646; Green=Actuals</span></div>
+      </div>
+    </div>
+
+    <!-- 4-WIDGET GRID -->
+    <div class="dash-grid">
+      <!-- SAP DATA SOURCES -->
+      <div class="widget">
+        <div class="widget-title">SAP Data Sources Loaded</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+          ${[['KOB1','kob1',kob1Count,kob1Total,'var(--blue)'],['FAGLL03','fagll03',fagllCount,fagllTotal,'var(--teal)'],['Manual','manual',manualCount,INVOICES.filter(i=>i.sapSource==='manual').reduce((s,i)=>s+i.amount,0),'var(--muted)']].map(([lbl,src,cnt,total,color])=>`<div style="background:var(--paper3);border:1px solid var(--rule);border-radius:6px;padding:10px;text-align:center;cursor:pointer;" onclick="go('invoices')">
+            ${sapBadge(src)}
+            <div style="font-family:var(--mono);font-size:15px;font-weight:600;margin:6px 0 2px;color:${color};">${cnt}</div>
+            <div style="font-size:10px;color:var(--muted);">invoices</div>
+            <div style="font-family:var(--mono);font-size:11px;font-weight:600;color:${color};margin-top:2px;">${fmt(total)}</div>
+          </div>`).join('')}
+        </div>
+        <div class="widget-title" style="margin-bottom:6px;">Recent Invoices Loaded</div>
+        ${recentInvs.map(inv=>{const pr=PRS.find(p=>p.id===inv.prId);const overdue=inv.due&&inv.due<today()&&inv.status!=='paid';return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--rule);">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:1px;">
+              ${sapBadge(inv.sapSource)}
+              <span style="font-family:var(--mono);font-size:10px;color:var(--blue);">${inv.num}</span>
+              ${overdue?'<span style="font-size:10px;color:var(--accent);font-weight:600;">⚠ Due</span>':''}
+            </div>
+            <div style="font-size:11px;color:var(--muted);">${pr?pr.title.substring(0,30)+'…':inv.prId||'No PR'} &middot; ${MONTHS[inv.month]||'—'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:var(--mono);font-size:12px;font-weight:600;color:${inv.status==='paid'?'var(--green)':inv.status==='accrual'?'var(--purple)':'var(--teal)'};">${fmt(inv.amount)}</div>
+            ${invBadge(inv.status)}
+          </div>
+        </div>`;}).join('')}
+        <button class="btn btn-teal" style="width:100%;justify-content:center;margin-top:5px;font-size:11px;" onclick="go('invoices')">View All Invoices &#8594;</button>
+      </div>
+
+      <!-- CATEGORY ACTUALS -->
+      <div class="widget">
+        <div class="widget-title">Category — Committed vs Actuals vs AOP</div>
+        ${CATS.filter(c=>getSpend(c.label)>0).map(c=>{const comm=getSpend(c.label),act=getCatActuals(c.label),a=AOP?AOP.allocations[c.label]:null,ann=a?a.annual:0;const pct2=ann?pc(comm,ann):0;
+          return`<div class="spark-row">
+            <div class="spark-lbl">${c.em} ${c.label}</div>
+            <div class="spark-wrap" style="height:9px;">
+              ${ann?`<div class="spark-fill" style="width:100%;background:${c===CATS[0]?'var(--accent)':'var(--blue)'};opacity:.12;"></div>`:''}
+              <div class="spark-fill" style="width:${ann?Math.min(100,pct2):0}%;background:${progColor(pct2)};"></div>
+              ${act&&ann?`<div class="spark-fill" style="width:${Math.min(100,pc(act,ann))}%;background:var(--green);opacity:.75;z-index:2;"></div>`:''}
+            </div>
+            <div class="spark-val"><span style="color:${progColor(pct2)};">${fmt(comm)}</span></div>
+          </div>`;
+        }).join('')}
+        <div style="display:flex;gap:10px;margin-top:7px;font-size:10px;color:var(--muted);"><span style="color:var(--amber);">&#9646; Committed</span><span style="color:var(--green);">&#9646; Actuals</span></div>
+      </div>
+
+      <!-- INVOICE STATUS -->
+      <div class="widget">
+        <div class="widget-title">Invoice Status Breakdown</div>
+        ${['paid','processing','received','queried','accrual'].map(st=>{const invs=INVOICES.filter(i=>i.status===st);const total=invs.reduce((s,i)=>s+i.amount,0);const pct2=getTotalInvoiced()?pc(total,getTotalInvoiced()):0;const colors={paid:'var(--green)',processing:'var(--amber)',received:'var(--blue)',queried:'var(--accent)',accrual:'var(--purple)'};return`<div class="spark-row"><div class="spark-lbl">${invBadge(st)}</div><div class="spark-wrap"><div class="spark-fill" style="width:${pct2}%;background:${colors[st]||'var(--muted)'};"></div></div><div class="spark-val">${fmt(total)}</div></div>`;}).join('')}
+        <div style="margin-top:9px;padding-top:8px;border-top:1px solid var(--rule);font-size:11px;color:var(--muted);">
+          Invoice coverage: <strong style="color:var(--teal);">${committed?pc(invoiced,committed):0}%</strong> &middot;
+          Payment rate: <strong style="color:var(--green);">${invoiced?pc(actuals,invoiced):0}%</strong>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--muted);">
+          Overdue: <strong style="color:var(--accent);">${INVOICES.filter(i=>i.due&&i.due<today()&&i.status!=='paid'&&i.status!=='accrual').length}</strong> invoices
+        </div>
+        <button class="btn btn-amber" style="width:100%;justify-content:center;margin-top:8px;font-size:11px;" onclick="openUploadModal()">&#8679; Load SAP Data</button>
+      </div>
+
+      <!-- ACTUALS CONSOLIDATED -->
+      <div class="widget">
+        <div class="widget-title">Actuals Consolidated by Month</div>
+        ${MONTHS.map((m,i)=>{const act=getMonthActuals(i),inv=getMonthInvoiced(i),plan=getTotalMonthSpend(i);const maxV=Math.max(plan,inv,act,1);const isCur=i===CURRENT_MONTH,isPast=i<CURRENT_MONTH;if(!act&&!inv&&!isPast&&!isCur)return'';return`<div class="spark-row" style="${isCur?'background:var(--accent-s);border-radius:4px;padding:2px 4px;margin:0 -4px 5px;':'margin-bottom:5px;'}">
+            <div class="spark-lbl" style="${isCur?'color:var(--accent);font-weight:600;':''}">${m}${isCur?' ●':''}</div>
+            <div class="spark-wrap" style="height:8px;">
+              ${plan?`<div class="spark-fill" style="width:${pc(plan,Math.max(plan,inv,act,1))}%;background:rgba(122,116,104,.2);"></div>`:''}
+              ${inv?`<div class="spark-fill" style="width:${pc(inv,Math.max(plan,inv,act,1))}%;background:var(--teal);opacity:.7;z-index:1;"></div>`:''}
+              ${act?`<div class="spark-fill" style="width:${pc(act,Math.max(plan,inv,act,1))}%;background:var(--green);z-index:2;"></div>`:''}
+            </div>
+            <div class="spark-val">${act?`<span style="color:var(--green);font-weight:600;">${fmtK(act)}</span>`:`<span style="color:var(--muted);">—</span>`}</div>
+          </div>`;}).join('')}
+        <div style="display:flex;gap:10px;margin-top:6px;font-size:10px;color:var(--muted);"><span>&#9646; Plan</span><span style="color:rgba(15,107,107,.7);">&#9646; Invoiced</span><span style="color:var(--green);">&#9646; Actuals</span></div>
+      </div>
+    </div>
+
+    <div class="sh"><div class="st">Recent Requests</div><div class="sr2"></div></div>
+    ${tbl(PRS.slice().reverse().slice(0,5))}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  LIST
+// ════════════════════════════════════════════════════════════
+function vList(filter){
+  const titles={all:'All Purchase Requests',mine:'My Requests',pending:'Pending Approval',approved:'Approved',rejected:'Rejected'};
+  let list;if(filter==='mine')list=PRS.filter(p=>p.by==='Sarah Chen');else if(filter==='all')list=PRS;else list=PRS.filter(p=>p.status===filter);
+  return`<div class="tb"><div><div class="pg-title">${titles[filter]}<small>${list.length} request${list.length!==1?'s':''} &middot; ${CUR}</small></div></div>
+    <div class="tb-acts"><button class="btn btn-p" onclick="openModal()">+ New PR</button></div></div>
+  <div class="ct">${filter==='pending'&&list.length?`<div class="alert">&#9651; ${list.length} awaiting review. SLA: 48 hours.</div>`:''} ${tbl(list,filter==='pending')}</div>`;
+}
+
+function tbl(list,actions=false){
+  if(!list.length)return`<div class="empty">No requests found.</div>`;
+  return`<div style="overflow-x:auto;"><table class="ptbl"><thead class="pthead"><tr>
+    <th>PR ID</th><th>Title / Vendor</th><th>Region</th><th>Category</th><th>Committed</th><th>Invoiced</th><th>Actuals</th><th>Status</th><th>Approval</th>${actions?'<th>Actions</th>':''}
+  </tr></thead><tbody>
+  ${list.map(pr=>{const inv=getPRInvoiced(pr.id),act=getPRActuals(pr.id);
+    return`<tr class="ptr" onclick="openDetail('${pr.id}')">
+      <td><div class="pid">${pr.id}</div></td>
+      <td><div class="pnm">${pr.title}</div><div class="pvd">${pr.vendor}</div></td>
+      <td><span class="rgchip">${regionLabel(pr.region)}</span></td>
+      <td><span class="cchip">${catO(pr.cat).em} ${pr.cat}</span></td>
+      <td><span class="amtc">${fmt(pr.amount)}</span></td>
+      <td><span class="amtc" style="color:var(--teal);">${inv?fmt(inv):'—'}</span></td>
+      <td><span class="amtc" style="color:var(--green);">${act?fmt(act):'—'}</span></td>
+      <td>${sbadge(pr.status)}</td>
+      <td>${chainH(pr.steps)}</td>
+      ${actions?`<td onclick="event.stopPropagation()"><div style="display:flex;gap:4px;"><button class="btn btn-a" style="padding:3px 8px;font-size:11px;" onclick="approvePR('${pr.id}')">&#10003;</button><button class="btn btn-r" style="padding:3px 8px;font-size:11px;" onclick="rejectPR('${pr.id}')">&#10005;</button></div></td>`:''}
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  INVOICES & ACTUALS — FULL EDITABLE VIEW
+// ════════════════════════════════════════════════════════════
+function vInvoices(){
+  const totalInv=getTotalInvoiced(),totalAct=getTotalActuals(),totalAcc=getTotalAccruals();
+  const open=INVOICES.filter(i=>['received','processing','queried'].includes(i.status)).length;
+  const kob1Total=INVOICES.filter(i=>i.sapSource==='kob1').reduce((s,i)=>s+i.amount,0);
+  const fagllTotal=INVOICES.filter(i=>i.sapSource==='fagll03').reduce((s,i)=>s+i.amount,0);
+  return`
+  <div class="tb">
+    <div><div class="pg-title">Invoices &amp; Actuals<small>${INVOICES.length} records &middot; ${CUR}</small></div></div>
+    <div class="tb-acts">
+      <button class="btn btn-teal" onclick="openUploadModal()">&#9641; Load SAP Data (KOB1 / FAGLL03)</button>
+      <button class="btn btn-s" onclick="exportInvCSV()">&#8681; Export CSV</button>
+      <button class="btn btn-s" onclick="go('reconcile')">Reconciliation &#8594;</button>
+    </div>
+  </div>
+  <div class="ct">
+    <div class="sg sg-6">
+      <div class="sc sc5"><div class="sn">${fmt(totalInv)}</div><div class="sl">Total Invoiced</div><div class="ss">${INVOICES.length} records</div></div>
+      <div class="sc sc3"><div class="sn">${fmt(totalAct)}</div><div class="sl">Actuals (Paid)</div><div class="ss">${INVOICES.filter(i=>i.status==='paid').length} paid</div></div>
+      <div class="sc sc2"><div class="sn">${open}</div><div class="sl">Open / Pending</div><div class="ss">Action required</div></div>
+      <div class="sc sc6"><div class="sn">${fmt(totalAcc)}</div><div class="sl">Accruals</div><div class="ss">${INVOICES.filter(i=>i.status==='accrual').length} entries</div></div>
+      <div class="sc sc4"><div class="sn">${fmt(kob1Total)}</div><div class="sl">From KOB1</div><div class="ss">${INVOICES.filter(i=>i.sapSource==='kob1').length} records</div></div>
+      <div class="sc sc5" style="--sc5-color:var(--teal);"><div class="sn">${fmt(fagllTotal)}</div><div class="sl">From FAGLL03</div><div class="ss">${INVOICES.filter(i=>i.sapSource==='fagll03').length} records</div></div>
+    </div>
+
+    <!-- SAP SOURCE FILTER TABS -->
+    <div class="tabs">
+      <div class="tab active" id="itab-all" onclick="swInvTab(this,'ia')">All (${INVOICES.length})</div>
+      <div class="tab" id="itab-kob1" onclick="swInvTab(this,'ik')">KOB1 (${INVOICES.filter(i=>i.sapSource==='kob1').length})</div>
+      <div class="tab" id="itab-fagll" onclick="swInvTab(this,'if')">FAGLL03 (${INVOICES.filter(i=>i.sapSource==='fagll03').length})</div>
+      <div class="tab" id="itab-open" onclick="swInvTab(this,'io')">Open (${INVOICES.filter(i=>['received','processing'].includes(i.status)).length})</div>
+      <div class="tab" id="itab-paid" onclick="swInvTab(this,'ip')">Paid (${INVOICES.filter(i=>i.status==='paid').length})</div>
+      <div class="tab" id="itab-accrual" onclick="swInvTab(this,'icc')">Accruals (${INVOICES.filter(i=>i.status==='accrual').length})</div>
+    </div>
+
+    <div id="ia">${invTable(INVOICES)}</div>
+    <div id="ik" style="display:none;">${invTable(INVOICES.filter(i=>i.sapSource==='kob1'))}</div>
+    <div id="if" style="display:none;">${invTable(INVOICES.filter(i=>i.sapSource==='fagll03'))}</div>
+    <div id="io" style="display:none;">${invTable(INVOICES.filter(i=>['received','processing'].includes(i.status)))}</div>
+    <div id="ip" style="display:none;">${invTable(INVOICES.filter(i=>i.status==='paid'))}</div>
+    <div id="icc" style="display:none;">${invTable(INVOICES.filter(i=>i.status==='accrual'))}</div>
+  </div>`;
+}
+
+function invTable(list){
+  if(!list.length)return`<div class="empty">No records in this view.</div>`;
+  return`<div style="overflow-x:auto;">
+  <table class="ptbl"><thead class="pthead"><tr>
+    <th>Doc / Invoice #</th><th>SAP Source</th><th>PR / Title</th><th>Vendor</th><th>Date</th><th>Due</th><th>Month</th><th>Amount (${CUR})</th><th>GL Code</th><th>SAP Order</th><th>Status</th><th>Paid Date</th><th>Actions</th>
+  </tr></thead><tbody>
+  ${list.map(inv=>{
+    const pr=PRS.find(p=>p.id===inv.prId);
+    const overdue=inv.due&&inv.due<today()&&inv.status!=='paid'&&inv.status!=='accrual';
+    return`<tr class="ptr" onclick="openInvDetail('${inv.id}')">
+      <td><div class="pid" style="font-size:10px;">${inv.num}</div><div style="font-size:9px;color:var(--muted);">${inv.id}</div></td>
+      <td>${sapBadge(inv.sapSource)}</td>
+      <td><div style="font-size:11px;font-weight:500;">${pr?pr.title.substring(0,28)+'…':inv.prId||'—'}</div><div style="font-family:var(--mono);font-size:10px;color:var(--blue);">${inv.prId||'—'}</div></td>
+      <td style="font-size:11px;">${inv.vendor}</td>
+      <td style="font-family:var(--mono);font-size:10px;">${inv.date||'—'}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:${overdue?'var(--accent)':'inherit'};">${inv.due||'—'}${overdue?' ⚠':''}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--muted);">${inv.month!=null?MONTHS[inv.month]:'—'}</td>
+      <td><span class="amtc" style="color:${inv.status==='paid'?'var(--green)':inv.status==='accrual'?'var(--purple)':'var(--teal)'};">${fmt(inv.amount)}</span></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--muted);">${inv.gl||'—'}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--muted);">${inv.sapOrder||'—'}</td>
+      <td>${invBadge(inv.status)}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--green);">${inv.paidDate||'—'}</td>
+      <td onclick="event.stopPropagation()"><div style="display:flex;gap:3px;flex-wrap:wrap;">
+        ${inv.status!=='paid'&&inv.status!=='accrual'?`<button class="btn btn-a" style="font-size:10px;padding:3px 7px;" onclick="quickPaid('${inv.id}')">&#10003;</button>`:''}
+        ${inv.status!=='queried'&&inv.status!=='paid'?`<button class="btn btn-r" style="font-size:10px;padding:3px 7px;" onclick="quickQuery('${inv.id}')">&#9888;</button>`:''}
+        <button class="btn btn-r" style="font-size:10px;padding:3px 7px;color:var(--accent);" onclick="deleteInv('${inv.id}')">&#128465;</button>
+      </div></td>
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+
+function swInvTab(el,tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['ia','ik','if','io','ip','icc'].forEach(t=>{const d=document.getElementById(t);if(d)d.style.display=t===tab?'':'none';});
+}
+
+// ════════════════════════════════════════════════════════════
+//  RECONCILIATION
+// ════════════════════════════════════════════════════════════
+function vReconcile(){
+  const committed=getTotalSpend(),invoiced=getTotalInvoiced(),actuals=getTotalActuals(),accruals=getTotalAccruals();
+  const aopT=AOP?AOP.total:0;
+  return`
+  <div class="tb"><div><div class="pg-title">Reconciliation<small>Committed vs Invoiced vs Actuals &middot; ${CUR}</small></div></div>
+    <div class="tb-acts"><button class="btn btn-teal" onclick="go('invoices')">&#8592; Invoices</button></div></div>
+  <div class="ct">
+    <div style="background:var(--ink);color:var(--paper);border-radius:8px;padding:18px;margin-bottom:18px;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid rgba(245,242,235,.1);padding-bottom:13px;margin-bottom:13px;">
+        ${[['AOP Budget',aopT,'rgba(27,79,138,.6)'],['Committed',committed,'var(--amber)'],['Invoiced',invoiced,'rgba(15,107,107,.9)'],['Actuals (Paid)',actuals,'var(--green)'],['Accruals',accruals,'var(--purple)']].map(([lbl,v,color])=>`<div style="padding-right:12px;"><div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,242,235,.3);margin-bottom:3px;">${lbl}</div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:${color};">${fmt(v)}</div>${aopT?`<div style="font-size:10px;color:rgba(245,242,235,.24);margin-top:2px;">${pc(v,aopT)}% of AOP</div>`:''}</div>`).join('')}
+      </div>
+      ${[['Invoice Coverage',invoiced,committed,'var(--teal)'],['Payment Rate',actuals,invoiced,'var(--green)']].map(([lbl,v,b,color])=>`<div style="display:flex;gap:9px;align-items:center;margin-bottom:7px;"><span style="font-size:11px;color:rgba(245,242,235,.38);width:120px;">${lbl}</span><div style="flex:1;height:6px;background:rgba(245,242,235,.08);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${b?Math.min(100,pc(v,b)):0}%;background:${color};border-radius:3px;"></div></div><span style="font-family:var(--mono);font-size:11px;color:${color};width:42px;text-align:right;">${b?pc(v,b):0}%</span></div>`).join('')}
+    </div>
+    <div class="sh"><div class="st">By Category</div><div class="sr2"></div></div>
+    <table class="alloc-tbl" style="margin-bottom:20px;">
+      <thead><tr><th></th><th>Category</th><th>AOP %</th><th>Committed</th><th>Invoiced</th><th>Actuals</th><th>Inv. Cover</th><th>Pay Rate</th><th>AOP Variance</th></tr></thead>
+      <tbody>
+      ${CATS.map(c=>{const a=AOP?AOP.allocations[c.label]:null;const comm=getSpend(c.label),inv=getCatInvoiced(c.label),act=getCatActuals(c.label);if(!comm&&!inv&&!act)return'';const invCov=comm?pc(inv,comm):0,payRate=inv?pc(act,inv):0,variance=a?a.annual-comm:0;
+        return`<tr><td style="font-size:17px;text-align:center;">${c.em}</td><td style="font-weight:500;">${c.label}</td>
+          <td style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--blue);">${a?a.pct.toFixed(1)+'%':'—'}</td>
+          <td style="font-family:var(--mono);font-size:12px;color:var(--amber);">${fmt(comm)}</td>
+          <td style="font-family:var(--mono);font-size:12px;color:var(--teal);">${inv?fmt(inv):'—'}</td>
+          <td style="font-family:var(--mono);font-size:12px;color:var(--green);">${act?fmt(act):'—'}</td>
+          <td><div style="display:flex;align-items:center;gap:5px;"><div style="width:48px;height:5px;background:var(--rule);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${Math.min(100,invCov)}%;background:var(--teal);border-radius:2px;"></div></div><span style="font-family:var(--mono);font-size:11px;color:var(--teal);">${invCov}%</span></div></td>
+          <td><div style="display:flex;align-items:center;gap:5px;"><div style="width:48px;height:5px;background:var(--rule);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${Math.min(100,payRate)}%;background:var(--green);border-radius:2px;"></div></div><span style="font-family:var(--mono);font-size:11px;color:var(--green);">${payRate}%</span></div></td>
+          <td class="${variance>=0?'pos':'neg'}">${variance>=0?'+':''}${a?fmt(variance):'—'}</td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>
+    <div class="sh"><div class="st">PR-Level Reconciliation</div><div class="sr2"></div></div>
+    <table class="ptbl"><thead class="pthead"><tr><th>PR ID</th><th>Title</th><th>Committed</th><th>Invoiced</th><th>Actuals</th><th>Un-invoiced</th><th>Settlement</th></tr></thead><tbody>
+    ${PRS.filter(p=>p.status==='approved').map(pr=>{const inv=getPRInvoiced(pr.id),act=getPRActuals(pr.id),uninv=pr.amount-inv;
+      return`<tr class="ptr" onclick="openDetail('${pr.id}')"><td><div class="pid">${pr.id}</div></td><td><div class="pnm" style="font-size:12px;">${pr.title}</div><div class="pvd">${pr.vendor}</div></td>
+        <td class="amtc">${fmt(pr.amount)}</td>
+        <td style="font-family:var(--mono);font-size:12px;color:var(--teal);">${inv?fmt(inv):'—'}</td>
+        <td style="font-family:var(--mono);font-size:12px;color:var(--green);">${act?fmt(act):'—'}</td>
+        <td style="font-family:var(--mono);font-size:12px;color:${uninv>0?'var(--amber)':'var(--green)'};">${uninv>0?fmt(uninv):'✓ Fully'}</td>
+        <td>${act>=pr.amount?`<span class="stbadge st-a">Settled</span>`:inv>=pr.amount?`<span class="stbadge st-t">Invoiced</span>`:inv>0?`<span class="stbadge st-p">Partial</span>`:`<span class="stbadge st-d">Pending</span>`}</td>
+      </tr>`;
+    }).join('')}
+    </tbody></table>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  AOP, BUDGET, REGIONS, CATEGORIES
+// ════════════════════════════════════════════════════════════
+function vAOP(){
+  if(!AOP)return`<div class="tb"><div><div class="pg-title">Annual Operating Plan<small>Not configured</small></div></div></div><div class="ct"><div class="setup-box"><div style="font-size:36px;margin-bottom:10px;">&#9651;</div><div style="font-family:var(--serif);font-size:22px;font-style:italic;margin-bottom:6px;">Set up your Annual Operating Plan</div><div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Define your total A&amp;P budget and set % allocation per category.</div><button class="btn btn-p" onclick="openAopModal()">&#43; Configure AOP</button></div></div>`;
+  const committed=getTotalSpend(),actuals=getTotalActuals(),pct=pc(committed,AOP.total),inFlight=getTotalSpend('pending');
+  const qSpend=QTR_MONTHS.map(qm=>qm.reduce((s,m)=>s+getTotalMonthSpend(m),0));
+  return`
+  <div class="tb"><div><div class="pg-title">Annual Operating Plan<small>FY${AOP.year} &middot; ${CUR}</small></div></div>
+    <div class="tb-acts"><button class="btn btn-s" onclick="openAopModal()">&#9998; Reconfigure</button><button class="btn btn-p" onclick="go('budget')">Budget vs AOP &#8594;</button></div></div>
+  <div class="ct">
+    <div class="aop-hero">
+      <div class="aop-top">
+        <div class="aop-col"><div class="aop-lbl">Total AOP Budget</div><div class="aop-val">${fmt(AOP.total)}</div><div class="aop-sub">FY${AOP.year} &middot; ${CUR}</div></div>
+        <div class="aop-col"><div class="aop-lbl">Committed</div><div class="aop-val" style="color:${pct>80?'#F5A623':'#36D9A0'}">${fmt(committed)}</div><div class="aop-sub">${pct}% of AOP</div></div>
+        <div class="aop-col"><div class="aop-lbl">Actuals (Paid)</div><div class="aop-val" style="color:rgba(26,107,69,.85)">${fmt(actuals)}</div><div class="aop-sub">${pc(actuals,AOP.total)}% of AOP</div></div>
+        <div class="aop-col"><div class="aop-lbl">Remaining</div><div class="aop-val" style="color:rgba(245,242,235,.6)">${fmt(AOP.total-committed-inFlight)}</div><div class="aop-sub">Uncommitted</div></div>
+      </div>
+      <div class="qtr-strip">
+        ${[0,1,2,3].map(qi=>{const qB=AOP.totalQuarterly[qi],qS=qSpend[qi],qP=pc(qS,qB);
+          return`<div class="qcol${qi===CURRENT_QTR?' aq':''}"><div class="q-lbl">Q${qi+1} ${qi===CURRENT_QTR?'&#9679; Active':''} &middot; ${AOP.qPct[qi]}%</div><div class="q-val">${fmt(qB)}</div><div class="q-bar"><div class="q-barfill" style="width:${Math.min(100,qP)}%;background:${qi===CURRENT_QTR?'var(--accent)':'rgba(245,242,235,.5)'}"></div></div><div class="q-sub">${fmt(qS)} committed &middot; ${qP}%</div></div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="sh"><div class="st">Category Allocations</div><div class="sr2"></div><span style="font-size:11px;color:var(--muted);cursor:pointer;" onclick="openAopModal()">&#9998; Edit %</span></div>
+    <table class="alloc-tbl" style="margin-bottom:20px;">
+      <thead><tr><th></th><th>Category</th><th>Alloc %</th><th>Annual Budget</th><th>Committed</th><th>Actuals</th><th>Remaining</th><th>Utilised</th></tr></thead>
+      <tbody>${CATS.map(c=>{const a=AOP.allocations[c.label];if(!a)return'';const spd=getSpend(c.label),act=getCatActuals(c.label),p=pc(spd,a.annual),color=progColor(p);
+        return`<tr><td style="font-size:18px;text-align:center;">${c.em}</td><td style="font-weight:500;">${c.label}</td>
+          <td style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--blue);">${a.pct.toFixed(1)}%</td>
+          <td style="font-family:var(--mono);font-size:12px;font-weight:600;">${fmt(a.annual)}</td>
+          <td style="font-family:var(--mono);font-size:12px;color:var(--amber);">${fmt(spd)}</td>
+          <td style="font-family:var(--mono);font-size:12px;color:var(--green);">${act?fmt(act):'—'}</td>
+          <td style="font-family:var(--mono);font-size:12px;color:${p>80?'var(--accent)':'var(--muted)'};">${fmt(Math.max(0,a.annual-spd))}</td>
+          <td><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:5px;background:var(--rule);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${Math.min(120,p)}%;background:${color};border-radius:3px;"></div></div><span style="font-family:var(--mono);font-size:10px;color:${color};width:32px;text-align:right;">${p}%</span></div></td>
+        </tr>`;
+      }).join('')}</tbody>
+      <tfoot><tr class="tot-row"><td></td><td>Total</td><td style="color:var(--blue);">100.0%</td><td>${fmt(AOP.total)}</td><td style="color:var(--amber);">${fmt(committed)}</td><td style="color:var(--green);">${actuals?fmt(actuals):'—'}</td><td>${fmt(Math.max(0,AOP.total-committed))}</td><td><span style="font-family:var(--mono);font-size:12px;color:${progColor(pct)};">${pct}%</span></td></tr></tfoot>
+    </table>
+  </div>`;
+}
+
+function vBudget(){
+  if(!AOP)return`<div class="ct"><div class="setup-box"><button class="btn btn-p" onclick="openAopModal()">&#43; Configure AOP first</button></div></div>`;
+  const committed=getTotalSpend(),actuals=getTotalActuals(),pct=pc(committed,AOP.total);
+  const colors=['var(--accent)','var(--blue)','var(--green)','var(--amber)','#7C5CBF','#C06D2A','#1B8A8A'];
+  const rows=CATS.map((c,i)=>{const a=AOP.allocations[c.label];if(!a)return null;const spd=getSpend(c.label),act=getCatActuals(c.label);const p=Math.min(120,pc(spd,a.annual));return{c,spd,act,annual:a.annual,allocPct:a.pct,p,color:colors[i%colors.length]};}).filter(Boolean);
+  return`
+  <div class="tb"><div><div class="pg-title">Budget vs AOP<small>FY${AOP.year} &middot; ${CUR}</small></div></div>
+    <div class="tb-acts"><button class="btn btn-teal" onclick="go('reconcile')">Reconciliation &#8594;</button></div></div>
+  <div class="ct">
+    <div style="background:var(--ink);color:var(--paper);border-radius:8px;padding:15px;margin-bottom:16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+      <div><div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,242,235,.32);margin-bottom:3px;">Committed Spend</div>
+        <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:var(--paper);line-height:1;">${fmt(committed)}</div>
+        <div style="height:4px;background:rgba(245,242,235,.1);border-radius:3px;margin-top:8px;overflow:hidden;"><div style="height:100%;width:${Math.min(100,pct)}%;background:${progColor(pct)};border-radius:3px;"></div></div>
+        <div style="font-size:11px;color:rgba(245,242,235,.28);margin-top:5px;">${pct}% of AOP &middot; Actuals: ${fmt(actuals)}</div></div>
+      <div style="text-align:right;"><div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,242,235,.32);margin-bottom:2px;">AOP Budget (${CUR})</div>
+        <div style="font-family:var(--mono);font-size:16px;font-weight:600;color:rgba(245,242,235,.6);">${fmt(AOP.total)}</div></div>
+    </div>
+    <div class="sh"><div class="st">By Category</div><div class="sr2"></div></div>
+    <div style="background:var(--paper2);border:1px solid var(--rule);border-radius:8px;padding:15px;margin-bottom:18px;">
+      ${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="font-size:12px;width:134px;flex-shrink:0;font-weight:500;">${r.c.em} ${r.c.label} <span style="font-family:var(--mono);font-size:9px;color:var(--blue);">${r.allocPct.toFixed(1)}%</span></div>
+        <div style="flex:1;height:8px;background:var(--rule);border-radius:3px;overflow:hidden;position:relative;">
+          <div style="height:100%;width:100%;background:${r.color};position:absolute;top:0;left:0;opacity:.16;border-radius:3px;"></div>
+          <div style="height:100%;width:${r.p}%;background:${progColor(r.p)};position:absolute;top:0;left:0;z-index:2;border-radius:3px;"></div>
+          ${r.act?`<div style="height:100%;width:${Math.min(r.p,pc(r.act,r.annual))}%;background:var(--green);position:absolute;top:0;left:0;z-index:3;border-radius:3px;opacity:.75;"></div>`:''}
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;width:96px;text-align:right;flex-shrink:0;"><span style="color:${progColor(r.p)};">${fmt(r.spd)}</span> <span style="color:var(--muted);">/ ${fmt(r.annual)}</span></div>
+      </div>`).join('')}
+      <div style="display:flex;gap:12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--rule);font-size:10px;color:var(--muted);"><span>&#9646; BG=AOP</span><span>&#9646; Committed</span><span style="color:var(--green);">&#9646; Actuals</span></div>
+    </div>
+    <div class="sh"><div class="st">Variance Table</div><div class="sr2"></div></div>
+    <table class="alloc-tbl">
+      <thead><tr><th></th><th>Category</th><th>Alloc %</th><th>AOP Budget</th><th>Committed</th><th>Actuals</th><th>Used %</th><th>Variance</th><th>Status</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td style="font-size:18px;text-align:center;">${r.c.em}</td><td style="font-weight:500;">${r.c.label}</td>
+        <td style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--blue);">${r.allocPct.toFixed(1)}%</td>
+        <td style="font-family:var(--mono);font-size:11px;">${fmt(r.annual)}</td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--amber);">${fmt(r.spd)}</td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--green);">${r.act?fmt(r.act):'—'}</td>
+        <td><span style="font-family:var(--mono);font-size:11px;color:${progColor(r.p)};">${r.p}%</span></td>
+        <td class="${r.annual>=r.spd?'pos':'neg'}">${r.annual>=r.spd?'+':''}${fmt(r.annual-r.spd)}</td>
+        <td>${r.p>100?`<span class="stbadge st-r">Over</span>`:r.p>80?`<span class="stbadge st-p">At Risk</span>`:`<span class="stbadge st-a">On Track</span>`}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+function vRegions(){
+  const aopT=AOP?AOP.total:0;
+  function renderNode(node){
+    const subIds=[];collectLeaves(node,subIds);
+    const spd=PRS.filter(p=>p.status==='approved'&&subIds.includes(p.region)).reduce((s,p)=>s+p.amount,0);
+    const prs=PRS.filter(p=>subIds.includes(p.region));
+    const pct=aopT?pc(spd,aopT):0;
+    const childHtml=node.children?node.children.map(c=>{
+      const cIds=[];collectLeaves(c,cIds);
+      const cSpd=PRS.filter(p=>p.status==='approved'&&cIds.includes(p.region)).reduce((s,p)=>s+p.amount,0);
+      const cPrs=PRS.filter(p=>cIds.includes(p.region));
+      const gcHtml=c.children?c.children.map(gc=>{const gcIds=[];collectLeaves(gc,gcIds);const gcSpd=PRS.filter(p=>p.status==='approved'&&gcIds.includes(p.region)).reduce((s,p)=>s+p.amount,0);return`<div class="rg-grandchild"><span style="font-size:13px;">${gc.icon}</span><span style="font-size:12px;font-weight:500;min-width:180px;">${gc.label}</span><span style="font-family:var(--mono);font-size:11px;color:var(--muted);">${PRS.filter(p=>gcIds.includes(p.region)).length} PRs</span><span style="margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:600;">${fmt(gcSpd)}</span><button class="btn btn-s" style="font-size:10px;padding:3px 7px;margin-left:7px;" onclick="filterRegion('${gc.id}')">View PRs</button></div>`;}).join(''):'';
+      return`<div style="border-top:1px solid var(--rule);"><div class="rg-child"><span style="font-size:14px;">${c.icon}</span><span style="font-size:12px;font-weight:600;min-width:180px;">${c.label}</span><span style="font-family:var(--mono);font-size:11px;color:var(--muted);">${cPrs.length} PRs</span><span style="margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:700;">${fmt(cSpd)}</span><button class="btn btn-s" style="font-size:10px;padding:3px 7px;margin-left:7px;" onclick="filterRegion('${c.id}')">View PRs</button></div>${gcHtml}</div>`;
+    }).join(''):'';
+    return`<div class="rg-tree-node"><div class="rg-tree-hdr" onclick="filterRegion('${node.id}')"><span style="font-size:18px;">${node.icon}</span><div><div style="font-weight:600;font-size:13px;">${node.label}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${prs.length} requests &middot; ${pct}% of AOP</div></div><div style="margin-left:auto;text-align:right;"><div style="font-family:var(--mono);font-size:17px;font-weight:600;">${fmt(spd)}</div><div style="font-size:10px;color:var(--muted);">committed</div></div></div><div class="rg-tree-bar"><div class="rg-tree-barfill" style="width:${Math.min(100,pct)}%;background:var(--purple);"></div></div>${childHtml?`<div class="rg-children">${childHtml}</div>`:''}</div>`;
+  }
+  return`<div class="tb"><div><div class="pg-title">Regions<small>${CUR}</small></div></div><div class="tb-acts"><button class="btn btn-p" onclick="openModal()">+ New PR</button></div></div>
+  <div class="ct"><div class="sg sg-4">${RT.map((r,i)=>{const ids=[];collectLeaves(r,ids);const spd=PRS.filter(p=>p.status==='approved'&&ids.includes(p.region)).reduce((s,p)=>s+p.amount,0);return`<div class="sc sc${i+1}"><div class="sn">${fmt(spd)}</div><div class="sl">${r.label}</div><div class="ss">${PRS.filter(p=>ids.includes(p.region)).length} requests</div></div>`;}).join('')}<div class="sc sc5"><div class="sn">${fmt(getTotalActuals())}</div><div class="sl">Total Actuals</div><div class="ss">All regions</div></div></div>
+  <div class="sh"><div class="st">Region Hierarchy</div><div class="sr2"></div></div>
+  <div>${RT.map(r=>renderNode(r)).join('')}</div></div>`;
+}
+function filterRegion(regId){document.querySelectorAll('.si').forEach(e=>e.classList.remove('active'));document.getElementById('nav-all').classList.add('active');const subIds=getSubIds(regId);const list=PRS.filter(p=>subIds.includes(p.region));document.getElementById('MV').innerHTML=`<div class="tb"><div><div class="pg-title">${regionLabel(regId)}<small>${list.length} requests</small></div></div><div class="tb-acts"><button class="btn btn-s" onclick="go('regions')">&#8592; Regions</button><button class="btn btn-p" onclick="openModal()">+ New PR</button></div></div><div class="ct">${tbl(list)}</div>`;}
+
+function vCats(){return`<div class="tb"><div><div class="pg-title">A&amp;P Categories</div></div></div><div class="ct"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;">${CATS.map(c=>{const spd=getSpend(c.label),act=getCatActuals(c.label);const a=AOP?AOP.allocations[c.label]:null;const p=a&&a.annual?pc(spd,a.annual):null;return`<div style="background:var(--paper2);border:1px solid var(--rule);border-radius:7px;padding:12px;cursor:pointer;transition:border-color .12s;" onclick="filterCat('${c.label}')" onmouseover="this.style.borderColor='var(--ink)'" onmouseout="this.style.borderColor='var(--rule)'"><div style="font-size:21px;margin-bottom:5px;">${c.em}</div><div style="font-weight:600;font-size:13px;margin-bottom:2px;">${c.label}</div><div style="font-size:11px;color:var(--muted);">${PRS.filter(p2=>p2.cat===c.label).length} requests &middot; ${fmt(spd)} committed</div>${act?`<div style="font-size:11px;color:var(--green);margin-top:2px;">Actuals: ${fmt(act)}</div>`:''}${a?`<div style="display:flex;align-items:center;gap:6px;margin-top:6px;"><div style="flex:1;height:4px;background:var(--rule);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${Math.min(120,p||0)}%;background:${progColor(p||0)};border-radius:2px;"></div></div><span style="font-family:var(--mono);font-size:10px;color:${progColor(p||0)};font-weight:700;">${a.pct.toFixed(1)}% AOP &middot; ${p||0}% used</span></div>`:''}</div>`;}).join('')}</div></div>`;}
+function filterCat(label){document.querySelectorAll('.si').forEach(e=>e.classList.remove('active'));document.getElementById('nav-all').classList.add('active');const list=PRS.filter(p=>p.cat===label);const c=catO(label);document.getElementById('MV').innerHTML=`<div class="tb"><div><div class="pg-title">${c.em} ${label}<small>${list.length} requests</small></div></div><div class="tb-acts"><button class="btn btn-s" onclick="go('categories')">&#8592; Categories</button><button class="btn btn-p" onclick="openModal()">+ New PR</button></div></div><div class="ct">${tbl(list)}</div>`;}
+
+// ════════════════════════════════════════════════════════════
+//  DETAIL PANEL (PR)
+// ════════════════════════════════════════════════════════════
+function openDetail(id){
+  const pr=PRS.find(p=>p.id===id);if(!pr)return;
+  openId=id;
+  document.getElementById('dpId').textContent=pr.id;
+  document.getElementById('dpTit').textContent=pr.title;
+  const sL=['Manager','Marketing Head','Finance'],sR=['MGR','MKT','FIN'];
+  const tl=pr.steps.map((s,i)=>{const cls=s===1?'done':s===-1?'fail':pr.steps.slice(0,i).every(x=>x===1)?'cur':'';const state=s===1?'Approved':s===-1?'Rejected':cls==='cur'?'Awaiting':'Not reached';return`<div class="tli ${cls}"><div class="tln">${sL[i]} <span style="font-family:var(--mono);font-size:9px;color:var(--muted);">[${sR[i]}]</span></div><div class="tlm">${state}${pr.sdates[i]?' &middot; '+pr.sdates[i]:''}</div></div>`;}).join('');
+  const invs=INVOICES.filter(i=>i.prId===pr.id);
+  const invTotal=invs.reduce((s,i)=>s+i.amount,0),actTotal=invs.filter(i=>i.status==='paid').reduce((s,i)=>s+i.amount,0);
+  const a=AOP?AOP.allocations[pr.cat]:null;
+  const maxPh=Math.max(...pr.monthlyPhase,1);
+  const moViz=`<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:2px;margin-top:5px;">${MONTHS.map((m,i)=>{const ph=pr.monthlyPhase[i]||0;const h=Math.max(2,Math.round(ph/maxPh*22));return`<div style="text-align:center;"><div style="font-family:var(--mono);font-size:7px;color:var(--muted);margin-bottom:2px;">${m.slice(0,1)}</div><div style="height:24px;display:flex;align-items:flex-end;justify-content:center;">${ph?`<div style="width:8px;height:${h}px;background:var(--blue);border-radius:2px 2px 0 0;opacity:.8;"></div>`:''}</div>${ph?`<div style="font-family:var(--mono);font-size:7px;color:var(--blue);">${ph}%</div>`:'<div style="height:9px;"></div>'}</div>`;}).join('')}</div>`;
+  document.getElementById('dpB').innerHTML=`
+    <div class="dpr"><div class="dpl">Status</div><div class="dpv">${sbadge(pr.status)}</div></div>
+    <div class="dpr"><div class="dpl">Region</div><div class="dpv"><span class="rgchip">${regionLabel(pr.region)}</span><div style="font-size:10px;color:var(--muted);margin-top:2px;">${regionPath(pr.region)}</div></div></div>
+    <div class="dpr"><div class="dpl">Category</div><div class="dpv">${catO(pr.cat).em} ${pr.cat}</div></div>
+    <div class="dpr"><div class="dpl">Committed (${CUR})</div><div class="dpv" style="font-family:var(--mono);font-size:15px;font-weight:600;">${fmtFull(pr.amount)}</div></div>
+    <div class="dpr" style="background:var(--paper2);border:1px solid var(--rule);border-radius:6px;padding:10px;">
+      <div class="dpl" style="margin-bottom:7px;">Invoice &amp; Actuals Summary</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+        <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Invoiced</div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--teal);">${invTotal?fmtFull(invTotal):'—'}</div></div>
+        <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Actuals (Paid)</div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--green);">${actTotal?fmtFull(actTotal):'—'}</div></div>
+        <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Un-invoiced</div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:${pr.amount-invTotal>0?'var(--amber)':'var(--green)'};">${pr.amount-invTotal>0?fmtFull(pr.amount-invTotal):'Fully invoiced'}</div></div>
+        <div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Invoices</div><div style="font-size:12px;font-weight:500;">${invs.length} records</div></div>
+      </div>
+      ${invs.length?`<div style="margin-top:9px;padding-top:7px;border-top:1px solid var(--rule);">${invs.map(inv=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">${sapBadge(inv.sapSource)}<span style="font-family:var(--mono);font-size:10px;color:var(--blue);">${inv.num}</span><span style="flex:1;font-size:10px;color:var(--muted);">${inv.date} &middot; ${MONTHS[inv.month]||'—'}</span><span style="font-family:var(--mono);font-size:11px;font-weight:600;color:${inv.status==='paid'?'var(--green)':'var(--teal)'};">${fmt(inv.amount)}</span>${invBadge(inv.status)}</div>`).join('')}</div>`:''}
+    </div>
+    ${a?`<div class="dpr" style="background:var(--paper2);border:1px solid var(--rule);border-radius:6px;padding:10px;"><div class="dpl">AOP — ${pr.cat} (${a.pct.toFixed(1)}%)</div><div style="margin-top:6px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;"><span style="color:var(--muted);">Annual: ${fmt(a.annual)}</span><span style="color:${progColor(pc(getSpend(pr.cat),a.annual))};">Committed: ${fmt(getSpend(pr.cat))} (${pc(getSpend(pr.cat),a.annual)}%)</span></div><div style="height:4px;background:var(--rule);border-radius:2px;overflow:hidden;margin-top:5px;"><div style="height:100%;width:${Math.min(120,pc(getSpend(pr.cat),a.annual))}%;background:${progColor(pc(getSpend(pr.cat),a.annual))};border-radius:2px;"></div></div></div>`:''}
+    <div class="dpr" style="background:var(--paper2);border:1px solid var(--rule);border-radius:6px;padding:10px;"><div class="dpl">Monthly Phasing</div>${moViz}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;"><div><div class="dpl">Campaign</div><div class="dpv">${pr.campaign||'—'}</div></div><div><div class="dpl">Cost Centre</div><div class="dpv" style="font-family:var(--mono);font-size:11px;">${pr.cc||'—'}</div></div><div><div class="dpl">Required By</div><div class="dpv">${pr.date||'—'}</div></div><div><div class="dpl">Raised By</div><div class="dpv">${pr.by}</div></div></div>
+    <div class="dpr"><div class="dpl">Justification</div><div class="dpv" style="font-size:12px;color:var(--muted);line-height:1.6;">${pr.just||'—'}</div></div>
+    <div class="dpr"><div class="dpl">Approval Timeline</div><div class="tl" style="margin-top:7px;">${tl}</div></div>`;
+  let act='';
+  if(pr.status==='pending')act=`<button class="btn btn-a" style="flex:1;" onclick="approvePR('${pr.id}')">&#10003; Approve</button><button class="btn btn-r" style="flex:1;" onclick="rejectPR('${pr.id}')">&#10005; Reject</button>`;
+  else if(pr.status==='draft')act=`<button class="btn btn-p" style="flex:1;" onclick="submitById('${pr.id}')">Submit &#8594;</button>`;
+  else if(pr.status==='approved')act=`<button class="btn btn-teal" style="flex:1;" onclick="openUploadModal()">&#9641; Load Invoice</button>`;
+  else act=`<span style="font-size:12px;color:var(--muted);">No actions &middot; ${pr.status}</span>`;
+  document.getElementById('dpA').innerHTML=act;
+  document.getElementById('DP').classList.add('open');
+}
+
+function openInvDetail(invId){
+  const inv=INVOICES.find(i=>i.id===invId);if(!inv)return;
+  openId=invId;
+  document.getElementById('dpId').textContent=inv.id;
+  document.getElementById('dpTit').textContent=inv.num;
+  const pr=PRS.find(p=>p.id===inv.prId);
+  document.getElementById('dpB').innerHTML=`
+    <div class="dpr"><div class="dpl">SAP Source</div><div class="dpv">${sapBadge(inv.sapSource)} ${inv.sapOrder?`<span style="font-family:var(--mono);font-size:11px;margin-left:6px;">${inv.sapOrder}</span>`:''}</div></div>
+    <div class="dpr"><div class="dpl">Status</div><div class="dpv">${invBadge(inv.status)}</div></div>
+    <div class="dpr"><div class="dpl">Linked PR</div><div class="dpv"><span style="font-family:var(--mono);font-size:12px;color:var(--blue);cursor:pointer;" onclick="closeDetail();openDetail('${inv.prId}')">${inv.prId||'—'}</span><div style="font-size:11px;color:var(--muted);">${pr?pr.title:'No PR linked'}</div></div></div>
+    <div class="dpr"><div class="dpl">Amount (${CUR})</div><div class="dpv" style="font-family:var(--mono);font-size:15px;font-weight:600;color:${inv.status==='paid'?'var(--green)':'var(--teal)'};">${fmtFull(inv.amount)}</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;">
+      <div><div class="dpl">Invoice Date</div><div class="dpv" style="font-family:var(--mono);font-size:11px;">${inv.date||'—'}</div></div>
+      <div><div class="dpl">Due Date</div><div class="dpv" style="font-family:var(--mono);font-size:11px;color:${inv.due&&inv.status!=='paid'&&inv.due<today()?'var(--accent)':'inherit'};">${inv.due||'—'}</div></div>
+      <div><div class="dpl">Month</div><div class="dpv" style="font-family:var(--mono);font-size:11px;">${inv.month!=null?MONTHS[inv.month]:'—'}</div></div>
+      <div><div class="dpl">Paid Date</div><div class="dpv" style="font-family:var(--mono);font-size:11px;color:var(--green);">${inv.paidDate||'—'}</div></div>
+      <div><div class="dpl">GL / Cost Element</div><div class="dpv" style="font-family:var(--mono);font-size:11px;">${inv.gl||'—'}</div></div>
+      <div><div class="dpl">Doc Type</div><div class="dpv" style="font-family:var(--mono);font-size:11px;">${inv.sapDocType||'—'}</div></div>
+    </div>
+    ${inv.notes?`<div class="dpr"><div class="dpl">Notes</div><div class="dpv" style="font-size:12px;color:var(--muted);line-height:1.6;">${inv.notes}</div></div>`:''}`;
+  let act=``;
+  if(inv.status!=='paid'&&inv.status!=='accrual')act+=`<button class="btn btn-a" style="flex:1;" onclick="quickPaid('${inv.id}')">&#10003; Mark Paid</button>`;
+  if(inv.status!=='queried'&&inv.status!=='paid')act+=`<button class="btn btn-r" onclick="quickQuery('${inv.id}')">&#9888; Query</button>`;
+  if(!act)act=`<span style="font-size:12px;color:var(--muted);">${inv.status==='paid'?'Paid '+inv.paidDate:'Accrual entry'}</span>`;
+  document.getElementById('dpA').innerHTML=act;
+  document.getElementById('DP').classList.add('open');
+}
+
+function closeDetail(){document.getElementById('DP').classList.remove('open');openId=null;}
+
+// ════════════════════════════════════════════════════════════
+//  ACTIONS
+// ════════════════════════════════════════════════════════════
+function approvePR(id){const pr=PRS.find(p=>p.id===id);if(!pr||pr.status!=='pending')return;const idx=pr.steps.findIndex(s=>s===0);if(idx===-1)return;pr.steps[idx]=1;pr.sdates[idx]=today();if(pr.steps.every(s=>s===1))pr.status='approved';updateBadges();if(openId===id)openDetail(id);render();toast(`✓ ${id} step ${idx+1} approved.${pr.status==='approved'?' Fully approved!':' Forwarded.'}`);}
+function rejectPR(id){const pr=PRS.find(p=>p.id===id);if(!pr||pr.status!=='pending')return;const idx=pr.steps.findIndex(s=>s===0);if(idx===-1)return;pr.steps[idx]=-1;pr.status='rejected';updateBadges();if(openId===id)openDetail(id);render();toast(`✕ ${id} rejected.`);}
+function submitById(id){const pr=PRS.find(p=>p.id===id);if(!pr)return;pr.status='pending';pr.steps=[1,0,0];pr.sdates=[today(),null,null];updateBadges();if(openId===id)openDetail(id);render();toast(`🚀 ${id} submitted.`);}
+function quickPaid(invId){const inv=INVOICES.find(i=>i.id===invId);if(!inv)return;inv.status='paid';inv.paidDate=today();updateBadges();if(openId===invId)openInvDetail(invId);render();toast(`✓ ${inv.num} marked as paid.`);}
+function quickQuery(invId){const inv=INVOICES.find(i=>i.id===invId);if(!inv)return;inv.status='queried';updateBadges();if(openId===invId)openInvDetail(invId);render();toast(`⚠ ${inv.num} flagged as queried.`);}
+function deleteInv(invId){if(!confirm('Delete this invoice record?'))return;const idx=INVOICES.findIndex(i=>i.id===invId);if(idx>=0)INVOICES.splice(idx,1);updateBadges();render();toast('Invoice deleted.');}
+
+// ════════════════════════════════════════════════════════════
+//  SAP UPLOAD MODAL
+// ════════════════════════════════════════════════════════════
+function openUploadModal(){
+  activeSapSrc='kob1';parsedFileRows=null;parsedHeaders=[];
+  ['kob1','fagll03','manual'].forEach(s=>{document.getElementById('src-'+s).classList.remove('active');});
+  document.getElementById('src-kob1').classList.add('active');
+  document.getElementById('uploadPreview').style.display='none';
+  document.getElementById('colMapping').style.display='none';
+  document.getElementById('manualEntryForm').style.display='none';
+  document.getElementById('upConfirmBtn').style.display='none';
+  document.getElementById('manualSaveBtn').style.display='none';
+  document.getElementById('fileInput').value='';
+  updateSapGuide();
+  // Populate PR dropdown in manual form
+  const mpr=document.getElementById('mPR');
+  mpr.innerHTML=`<option value="">-- None --</option>${PRS.filter(p=>p.status==='approved').map(p=>`<option value="${p.id}">${p.id} — ${p.title.substring(0,38)}</option>`).join('')}`;
+  document.getElementById('mAmtCurLbl').textContent=CURRENCIES[CUR].sym;
+  document.getElementById('mDate').value=today();
+  document.getElementById('UPOV').classList.add('open');
+}
+function closeUploadModal(){document.getElementById('UPOV').classList.remove('open');}
+
+function setSapSrc(src){
+  activeSapSrc=src;
+  ['kob1','fagll03','manual'].forEach(s=>{document.getElementById('src-'+s).classList.remove('active');});
+  document.getElementById('src-'+src).classList.add('active');
+  document.getElementById('colMapping').style.display='none';
+  document.getElementById('uploadPreview').style.display='none';
+  document.getElementById('upConfirmBtn').style.display='none';
+  document.getElementById('manualEntryForm').style.display=src==='manual'?'':'none';
+  document.getElementById('manualSaveBtn').style.display=src==='manual'?'':'none';
+  document.getElementById('uploadZone').style.display=src==='manual'?'none':'';
+  updateSapGuide();
+}
+
+function updateSapGuide(){
+  const guide=document.getElementById('sapFormatGuide');
+  if(activeSapSrc==='manual'){guide.style.display='none';return;}
+  guide.style.display='';
+  if(activeSapSrc==='kob1'){
+    guide.innerHTML=`<div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">SAP KOB1 — Purchase Order / Commitment Report</div>
+    <code style="font-family:var(--mono);font-size:10px;line-height:1.7;display:block;color:var(--ink);">Order | Document | Reference Doc | Posting Date | Document Date | Amount | Currency | Cost Element | Controlling Area | Assignment | Text</code>
+    <div style="margin-top:7px;font-size:11px;color:var(--muted);">SAP path: KOB1 &rarr; Enter Internal Order &rarr; Execute &rarr; List &rarr; Export to Spreadsheet</div>`;
+  } else {
+    guide.innerHTML=`<div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">SAP FAGLL03 — G/L Account Line Items (Actuals)</div>
+    <code style="font-family:var(--mono);font-size:10px;line-height:1.7;display:block;color:var(--ink);">Company Code | G/L Account | Document No | Posting Date | Document Date | Amount | Currency | Document Type | Posting Key | Reference | Assignment | Text | Cost Centre</code>
+    <div style="margin-top:7px;font-size:11px;color:var(--muted);">SAP path: FAGLL03 &rarr; Enter G/L Account(s) + Date Range &rarr; Execute &rarr; Download &rarr; Local File (.csv)</div>`;
+  }
+}
+
+function handleFileSelect(e){const f=e.target.files[0];if(f)processFile(f);}
+function handleFileDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)processFile(f);}
+
+function processFile(file){
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const text=ev.target.result;
+      // Detect delimiter
+      const line1=text.split('\n')[0];
+      const delim=line1.includes('\t')?'\t':line1.includes(';')?';':',';
+      const lines=text.trim().split('\n').filter(l=>l.trim());
+      if(lines.length<2){showUpError('File appears empty — need at least a header row and one data row.');return;}
+      parsedHeaders=lines[0].split(delim).map(h=>h.trim().replace(/^"|"$/g,''));
+      parsedFileRows=lines.slice(1).filter(l=>l.trim()).map(line=>{
+        const vals=[];let cur='',inQ=false;
+        for(const ch of line){if(ch==='"'){inQ=!inQ;}else if(ch===delim&&!inQ){vals.push(cur.trim().replace(/^"|"$/g,''));cur='';}else cur+=ch;}
+        vals.push(cur.trim().replace(/^"|"$/g,''));
+        const row={};parsedHeaders.forEach((h,i)=>row[h]=vals[i]||'');
+        return row;
+      });
+      // Build column mapping dropdowns
+      buildColMappings();
+      showUpPreview();
+    }catch(err){showUpError('Could not parse file: '+err.message);}
+  };
+  reader.readAsText(file);
+}
+
+function buildColMappings(){
+  const opts=`<option value="">-- Select --</option>`+parsedHeaders.map(h=>`<option value="${h}">${h}</option>`).join('');
+  ['mapDoc','mapAmt','mapDate','mapVendor','mapCC','mapGL'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=opts;});
+  // Auto-guess mappings
+  const autoGuess=(id,keywords)=>{const el=document.getElementById(id);const match=parsedHeaders.find(h=>keywords.some(k=>h.toLowerCase().includes(k)));if(el&&match)el.value=match;};
+  if(activeSapSrc==='kob1'){
+    autoGuess('mapDoc',['document','doc','reference','ref','inv']);
+    autoGuess('mapAmt',['amount','value','amt','debit','credit']);
+    autoGuess('mapDate',['posting date','postingdate','post date','date']);
+    autoGuess('mapVendor',['text','vendor','description','name','assignment']);
+    autoGuess('mapCC',['order','cost centre','costcentre','cc','internal order']);
+    autoGuess('mapGL',['cost element','gl','g/l','account','element']);
+  } else {
+    autoGuess('mapDoc',['document no','doc no','belnr','reference']);
+    autoGuess('mapAmt',['amount','value','amt','dmbtr']);
+    autoGuess('mapDate',['posting date','budat','date']);
+    autoGuess('mapVendor',['text','sgtxt','description']);
+    autoGuess('mapCC',['cost centre','kostl','profit centre']);
+    autoGuess('mapGL',['g/l account','hkont','account']);
+  }
+  // PR dropdown
+  const prSel=document.getElementById('mapPR');
+  prSel.innerHTML=`<option value="">-- Auto-match by Cost Centre --</option>${PRS.filter(p=>p.status==='approved').map(p=>`<option value="${p.id}">${p.id} — ${p.title.substring(0,35)}</option>`).join('')}`;
+  document.getElementById('colMapping').style.display='';
+}
+
+function showUpPreview(){
+  const prev=document.getElementById('uploadPreview');
+  prev.style.display='';
+  const rows=parsedFileRows||[];
+  prev.innerHTML=`<div class="alert blue">&#10003; <strong>${rows.length}</strong> data rows found in file — ${parsedHeaders.length} columns detected. Review mapping below, then import.</div>
+  <div style="overflow-x:auto;max-height:160px;margin-bottom:4px;">
+  <table class="ptbl"><thead class="pthead"><tr>${parsedHeaders.slice(0,8).map(h=>`<th>${h}</th>`).join('')}${parsedHeaders.length>8?'<th>...</th>':''}</tr></thead><tbody>
+  ${rows.slice(0,5).map(r=>`<tr>${parsedHeaders.slice(0,8).map(h=>`<td style="font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r[h]||''}</td>`).join('')}${parsedHeaders.length>8?'<td style="color:var(--muted);">...</td>':''}</tr>`).join('')}
+  ${rows.length>5?`<tr><td colspan="${Math.min(8,parsedHeaders.length)+1}" style="font-size:11px;color:var(--muted);text-align:center;">...and ${rows.length-5} more rows</td></tr>`:''}
+  </tbody></table></div>`;
+  document.getElementById('upConfirmBtn').style.display='';
+}
+
+function showUpError(msg){const prev=document.getElementById('uploadPreview');prev.style.display='';prev.innerHTML=`<div class="alert red">&#9888; ${msg}</div>`;document.getElementById('upConfirmBtn').style.display='none';}
+
+function confirmUpload(){
+  if(!parsedFileRows)return;
+  const docCol=document.getElementById('mapDoc').value;
+  const amtCol=document.getElementById('mapAmt').value;
+  const dateCol=document.getElementById('mapDate').value;
+  const vendorCol=document.getElementById('mapVendor').value;
+  const ccCol=document.getElementById('mapCC').value;
+  const glCol=document.getElementById('mapGL').value;
+  const defStatus=document.getElementById('mapStatus').value;
+  const forcePr=document.getElementById('mapPR').value;
+  if(!docCol||!amtCol){toast('⚠ Please map at least Document # and Amount columns.');return;}
+  let added=0,skipped=0;
+  parsedFileRows.forEach(r=>{
+    const num=(r[docCol]||'').trim();
+    const rawAmt=parseFloat((r[amtCol]||'').replace(/[^\d.\-]/g,''))||0;
+    if(!num||!rawAmt){skipped++;return;}
+    if(INVOICES.some(i=>i.num===num)){skipped++;return;}// skip duplicates
+    // Try to auto-match PR by cost centre
+    const ccVal=(r[ccCol]||'').trim();
+    let matchedPr=forcePr||PRS.find(p=>p.cc&&ccVal&&ccVal.toLowerCase().includes(p.cc.toLowerCase()))?.id||'';
+    const dateVal=r[dateCol]||today();
+    const mo=parseDate2Month(dateVal);
+    const amtINR=activeSapSrc==='fagll03'?Math.abs(fromD(rawAmt)):fromD(Math.abs(rawAmt));
+    INVOICES.push({
+      id:nextInvId(),prId:matchedPr,vendor:r[vendorCol]||'—',num,
+      date:dateVal,due:'',amount:amtINR,
+      status:defStatus,month:mo,
+      gl:r[glCol]||'',vendorRef:'',
+      notes:`Imported from SAP ${activeSapSrc.toUpperCase()}`,
+      paidDate:defStatus==='paid'?today():null,
+      sapSource:activeSapSrc,
+      sapOrder:activeSapSrc==='kob1'?(r['Order']||r['Internal Order']||''):'',
+      sapDocType:activeSapSrc==='fagll03'?(r['Document Type']||r['Docu.Type']||''):'RE'
+    });
+    added++;
+  });
+  updateBadges();closeUploadModal();render();
+  toast(`✅ Imported ${added} records from SAP ${activeSapSrc.toUpperCase()}${skipped?` (${skipped} skipped)`:''}.`);
+}
+
+function parseDate2Month(dateStr){
+  if(!dateStr)return CURRENT_MONTH;
+  const d=new Date(dateStr);
+  if(isNaN(d.getTime())){
+    // Try DD.MM.YYYY (SAP format)
+    const parts=dateStr.split('.');
+    if(parts.length===3)return Math.max(0,parseInt(parts[1]||'5')-1);
+    return CURRENT_MONTH;
+  }
+  return d.getMonth();
+}
+
+function saveManual(){
+  const num=document.getElementById('mNum').value.trim();
+  const date=document.getElementById('mDate').value;
+  const due=document.getElementById('mDue').value;
+  const rawAmt=parseFloat(document.getElementById('mAmt').value)||0;
+  const month=parseInt(document.getElementById('mMonth').value);
+  const status=document.getElementById('mStatus').value;
+  const vendor=document.getElementById('mVendor').value.trim();
+  const gl=document.getElementById('mGL').value.trim();
+  const sapSrc=document.getElementById('mSapSrc').value;
+  const paidDate=document.getElementById('mPaidDate').value;
+  const notes=document.getElementById('mNotes').value.trim();
+  const prId=document.getElementById('mPR').value;
+  if(!num){toast('⚠ Enter a document / invoice number.');return;}
+  if(!rawAmt||rawAmt<=0){toast('⚠ Enter a valid amount.');return;}
+  const amtINR=fromD(rawAmt);
+  INVOICES.push({id:nextInvId(),prId,vendor:vendor||'—',num,date,due,amount:amtINR,status,month:isNaN(month)?CURRENT_MONTH:month,gl,vendorRef:'',notes,paidDate:paidDate||(status==='paid'?today():null),sapSource:sapSrc,sapOrder:'',sapDocType:''});
+  updateBadges();closeUploadModal();render();
+  toast(`✅ Entry ${num} saved (${fmt(amtINR)}).`);
+}
+
+function exportInvCSV(){
+  const hdrs=['id','sap_source','sap_order','sap_doc_type','pr_id','invoice_num','vendor','date','due_date','amount_inr','amount_display','currency','month','month_name','status','gl_code','paid_date','notes'];
+  const rows=INVOICES.map(inv=>[inv.id,inv.sapSource,inv.sapOrder||'',inv.sapDocType||'',inv.prId||'',inv.num,inv.vendor,inv.date||'',inv.due||'',inv.amount,Math.round(toD(inv.amount)),CUR,inv.month!=null?inv.month:'',inv.month!=null?MONTHS[inv.month]:'',inv.status,inv.gl||'',inv.paidDate||'',`"${(inv.notes||'').replace(/"/g,'""')}"`]);
+  const csv=[hdrs.join(','),...rows.map(r=>r.join(','))].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`invoices_${CUR}_${today()}.csv`;a.click();URL.revokeObjectURL(url);
+  toast(`📥 Exported ${INVOICES.length} records.`);
+}
+
+// ════════════════════════════════════════════════════════════
+//  NEW PR MODAL
+// ════════════════════════════════════════════════════════════
+function buildRegionPicker(){
+  const box=document.getElementById('rgBox');
+  let html=`<div class="rg-group"><div class="rg-group-title">Direct Regions</div><div class="rg-row">${RT.filter(r=>!r.children).map(r=>`<button class="rg-btn${selRegion===r.id?' sel':''}" onclick="pickRegion('${r.id}')">${r.icon} ${r.label}</button>`).join('')}</div></div>`;
+  const intl=RT.find(r=>r.id==='intl');
+  if(intl){html+=`<div class="rg-group"><div class="rg-group-title">${intl.icon} ${intl.label}</div>`;intl.children.forEach(sub=>{if(!sub.children){html+=`<div class="rg-row"><button class="rg-btn${selRegion===sub.id?' sel':''}" onclick="pickRegion('${sub.id}')">${sub.icon} ${sub.label}</button></div>`;}else{html+=`<div style="margin-bottom:7px;"><div style="font-size:10px;font-weight:600;color:var(--muted);margin-bottom:4px;">${sub.icon} ${sub.label}</div><div class="rg-row">${sub.children.map(gc=>`<button class="rg-btn${selRegion===gc.id?' sel':''}" onclick="pickRegion('${gc.id}')">${gc.icon} ${gc.label}</button>`).join('')}</div></div>`;}});html+=`</div>`;}
+  box.innerHTML=html;
+  const sel=document.getElementById('rgSelected');if(sel)sel.textContent=selRegion?`Selected: ${regionPath(selRegion)}`:'';
+}
+function pickRegion(id){selRegion=id;buildRegionPicker();}
+function buildMoPhaseCells(){
+  const c=document.getElementById('moPhaseCells');if(!c)return;
+  c.innerHTML=MONTHS.map((m,i)=>`<div class="mo-cell"><div class="mo-lbl">${m}</div><input class="mo-inp${i===CURRENT_MONTH?' cur-mo':''}" id="mop${i}" type="number" step="1" min="0" max="100" value="${prMonthlyPhase[i]||''}" placeholder="0" oninput="prMonthlyPhase[${i}]=parseFloat(this.value)||0;updatePhaseSum()"/></div>`).join('');
+  updatePhaseSum();
+}
+function updatePhaseSum(){const sum=prMonthlyPhase.reduce((s,v)=>s+v,0);const ok=Math.abs(sum-100)<0.5;const msg=document.getElementById('phaseSumMsg');if(msg){msg.textContent=ok?`✓ ${sum.toFixed(0)}% — phasing set`:`Total: ${sum.toFixed(0)}% — must sum to 100%`;msg.style.color=ok?'var(--green)':'var(--accent)';}}
+function distributePhase(){const base=Math.floor(100/12),rem=100-(base*12);prMonthlyPhase=Array(12).fill(0).map((_,i)=>i<rem?base+1:base);buildMoPhaseCells();}
+function buildCatGrid(){document.getElementById('CG').innerHTML=CATS.map(c=>`<div class="cit${selCat===c.id?' sel':''}" onclick="selCat='${c.id}';buildCatGrid();showHint('${c.label}')"><span class="cem">${c.em}</span>${c.label}</div>`).join('');}
+function showHint(label){const h=document.getElementById('aopHint');if(!AOP||!h){return;}const a=AOP.allocations[label];if(!a){h.style.display='none';return;}const spd=getSpend(label),p=pc(spd,a.annual);h.style.display='block';h.innerHTML=`<strong>AOP — ${label} (${a.pct.toFixed(1)}%)</strong><br>Annual: ${fmt(a.annual)} &middot; Committed: <span style="color:${progColor(p)};font-weight:600;">${fmt(spd)} (${p}%)</span> &middot; Remaining: <strong>${fmt(Math.max(0,a.annual-spd))}</strong>`;}
+function openModal(){selCat=null;selRegion=null;prMonthlyPhase=Array(12).fill(0);prMonthlyPhase[CURRENT_MONTH]=100;['fT','fV','fA','fDate','fCp','fCc','fJ'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('fAmtCurLbl').textContent=CURRENCIES[CUR].sym;document.getElementById('aopHint').style.display='none';buildCatGrid();buildRegionPicker();buildMoPhaseCells();document.getElementById('OV').classList.add('open');}
+function closeModal(){document.getElementById('OV').classList.remove('open');}
+function formData(){return{title:document.getElementById('fT').value.trim(),vendor:document.getElementById('fV').value.trim(),amount:fromD(parseFloat(document.getElementById('fA').value)||0),date:document.getElementById('fDate').value,campaign:document.getElementById('fCp').value.trim(),cc:document.getElementById('fCc').value.trim(),just:document.getElementById('fJ').value.trim(),cat:CATS.find(c=>c.id===selCat)?.label||null,region:selRegion,monthlyPhase:[...prMonthlyPhase]};}
+function validate(d){if(!d.title){toast('⚠ Enter a PR title.');return false;}if(!d.vendor){toast('⚠ Enter a vendor.');return false;}if(!d.amount||d.amount<=0){toast('⚠ Enter a valid amount.');return false;}if(!d.cat){toast('⚠ Select a category.');return false;}if(!d.region){toast('⚠ Select a region.');return false;}if(!d.just){toast('⚠ Add a justification.');return false;}const ph=d.monthlyPhase.reduce((s,v)=>s+v,0);if(Math.abs(ph-100)>0.5){toast(`⚠ Monthly phasing must sum to 100% (currently ${ph.toFixed(0)}%).`);return false;}return true;}
+function saveDraft(){const d=formData();if(!d.title){toast('⚠ Enter at least a title.');return;}const id=nextPRId();PRS.push({id,title:d.title,vendor:d.vendor||'TBD',cat:d.cat||'Other',amount:d.amount||0,status:'draft',campaign:d.campaign,cc:d.cc,date:d.date,just:d.just,steps:[0,0,0],sdates:[null,null,null],by:'Sarah Chen',on:today(),region:d.region||'na',monthlyPhase:d.monthlyPhase});updateBadges();closeModal();render();toast(`💾 ${id} saved as draft.`);}
+function submitPR(){const d=formData();if(!validate(d))return;if(AOP&&d.cat){const a=AOP.allocations[d.cat];if(a&&getSpend(d.cat)+d.amount>a.annual&&!confirm(`⚠ Exceeds AOP for ${d.cat} by ${fmt(getSpend(d.cat)+d.amount-a.annual)}. Submit anyway?`))return;}const id=nextPRId();PRS.push({id,title:d.title,vendor:d.vendor,cat:d.cat,amount:d.amount,status:'pending',campaign:d.campaign,cc:d.cc,date:d.date,just:d.just,steps:[1,0,0],sdates:[today(),null,null],by:'Sarah Chen',on:today(),region:d.region,monthlyPhase:d.monthlyPhase});updateBadges();closeModal();go('all');toast(`🚀 ${id} submitted — awaiting Marketing Head approval.`);}
+
+// ════════════════════════════════════════════════════════════
+//  AOP MODAL
+// ════════════════════════════════════════════════════════════
+function openAopModal(){if(AOP)workingAlloc={...AOP.allocPct};else workingAlloc={...PRESETS.digital};document.getElementById('aopTotal').value=AOP?AOP.total:'';document.getElementById('aopYear').value=AOP?AOP.year:2026;document.getElementById('aopCurLbl').textContent=CURRENCIES[CUR].sym;buildAllocBody();onAllocInput();document.getElementById('AOPOV').classList.add('open');}
+function closeAopModal(){document.getElementById('AOPOV').classList.remove('open');}
+function applyPreset(p){workingAlloc={...PRESETS[p]};buildAllocBody();onAllocInput();}
+function buildAllocBody(){document.getElementById('allocBody').innerHTML=CATS.map(c=>`<tr><td style="text-align:center;font-size:17px;">${c.em}</td><td style="font-weight:500;font-size:12.5px;">${c.label}</td><td><input class="pct-inp" id="alloc_${c.id}" type="number" step="0.1" min="0" max="100" value="${(workingAlloc[c.label]||0).toFixed(1)}" oninput="workingAlloc['${c.label}']=parseFloat(this.value)||0;onAllocInput()"/></td><td><div class="pct-bar"><div class="pct-bar-fill" id="abar_${c.id}" style="width:${Math.min(100,((workingAlloc[c.label]||0)/30)*100)}%;"></div></div></td><td id="aamt_${c.id}" style="font-family:var(--mono);font-size:11px;color:var(--muted);">—</td></tr>`).join('');}
+function onAllocInput(){const total=parseFloat(document.getElementById('aopTotal')?.value)||0;const sum=Object.values(workingAlloc).reduce((s,v)=>s+v,0);const rounded=Math.round(sum*10)/10;const ok=Math.abs(rounded-100)<0.15;CATS.forEach(c=>{const pct=workingAlloc[c.label]||0;const bar=document.getElementById('abar_'+c.id),amt=document.getElementById('aamt_'+c.id);if(bar)bar.style.width=Math.min(100,(pct/30)*100)+'%';if(amt)amt.textContent=total?fmt(Math.round(total*pct/100)):'—';});const pEl=document.getElementById('allocPctTot'),aEl=document.getElementById('allocAmtTot');if(pEl){pEl.textContent=rounded.toFixed(1)+'%';pEl.style.color=ok?'var(--green)':'var(--accent)';}if(aEl)aEl.textContent=total?fmt(total):'—';const msg=document.getElementById('allocMsg');if(msg){if(ok){msg.textContent='✓ Allocation sums to 100%';msg.style.color='var(--green)';}else{msg.textContent=`⚠ Total is ${rounded.toFixed(1)}% — must equal 100% (diff: ${(rounded-100).toFixed(1)}%)`;msg.style.color='var(--accent)';}}}
+function saveAop(){const td=parseFloat(document.getElementById('aopTotal').value);if(!td||td<=0){toast('⚠ Enter a valid total budget.');return;}const totalINR=fromD(td);const year=parseInt(document.getElementById('aopYear').value);const sum=Object.values(workingAlloc).reduce((s,v)=>s+v,0);if(Math.abs(sum-100)>0.15){toast(`⚠ Allocations must sum to 100% (currently ${sum.toFixed(1)}%).`);return;}AOP=buildAOP(year,totalINR,workingAlloc);document.getElementById('aopYrLabel').textContent=`AOP ${year}`;closeAopModal();go('aop');toast(`✅ AOP FY${year} saved — ${fmt(totalINR)} across 13 categories.`);}
+
+/* ─────────────────────────────────────────────
+   COPILOT EXPERIENCE (Local mode + extensible)
+   - Prompt starters + suggested prompts
+   - Streaming responses
+   - Citations (open PR / go to view)
+   - Action cards (open modals) + confirmation
+   - Feedback loop (thumbs)
+───────────────────────────────────────────── */
+
+let cpOpen = false;
+let cpMode = 'smart';
+let cpMessages = []; // {role:'user'|'assistant', text, cites:[], suggestions:[], ts}
+const CP_STARTERS = [
+  "Show pending approvals",
+  "Budget utilization vs AOP",
+  "Invoices open / overdue",
+  "Digital Media spend + remaining",
+  "Reconciliation summary",
+  "Create a new PR",
+  "Load SAP data (KOB1/FAGLL03)",
+  "Top overspent categories"
+];
+
+function toggleCopilot(){
+  cpOpen = !cpOpen;
+  const el = document.getElementById('CP');
+  el.classList.toggle('open', cpOpen);
+  // If you want: close PR detail panel when Copilot opens
+  if(cpOpen) closeDetail();
+  if(cpOpen) seedCopilotStarters();
+  positionCopilot();
+}
+
+function positionCopilot(){
+  // If DP panel is open, keep Copilot visible (stacking)
+  const dp = document.getElementById('DP');
+  const cp = document.getElementById('CP');
+  if(!cp) return;
+  if(dp && dp.classList.contains('open')){
+    cp.style.boxShadow = '-18px 0 60px rgba(14,17,23,.18)';
+  }
+}
+
+function setCopilotMode(m){
+  cpMode = m;
+  document.getElementById('cpModePill').textContent =
+    m === 'deep' ? 'Think deeper' : m === 'quick' ? 'Quick' : 'Smart';
+}
+
+function seedCopilotStarters(){
+  const row = document.getElementById('cpStarters');
+  if(!row) return;
+  row.innerHTML = CP_STARTERS.map(s => `<button class="cpChip" onclick="cpAskStarter('${escapeQuotes(s)}')">${s}</button>`).join('');
+}
+
+function escapeQuotes(s){ return (s||'').replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+
+function cpAskStarter(text){
+  document.getElementById('cpWelcome').style.display = 'none';
+  document.getElementById('cpInput').value = text;
+  cpSend();
+}
+
+function cpHandleKey(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    cpSend();
+  }
+}
+
+function clearCopilot(){
+  cpMessages = [];
+  document.getElementById('cpMsgs').innerHTML = '';
+  document.getElementById('cpWelcome').style.display = '';
+  seedCopilotStarters();
+}
+
+function openPromptGallery(){
+  // Minimal "gallery": just re-show starters
+  document.getElementById('cpWelcome').style.display = '';
+  seedCopilotStarters();
+  toast('Prompt gallery opened.');
+}
+
+function cpSend(){
+  const ta = document.getElementById('cpInput');
+  const q = (ta.value || '').trim();
+  if(!q) return;
+
+  document.getElementById('cpWelcome').style.display = 'none';
+
+  cpPushMsg('user', q);
+  ta.value = '';
+  ta.style.height = 'auto';
+
+  cpStreamAssistant(q);
+}
+
+function cpPushMsg(role, text, opts={}){
+  const msg = { role, text, cites: opts.cites || [], suggestions: opts.suggestions || [], ts: new Date() };
+  cpMessages.push(msg);
+  cpRender();
+}
+
+function cpRender(){
+  const wrap = document.getElementById('cpMsgs');
+  if(!wrap) return;
+
+  wrap.innerHTML = cpMessages.map((m, idx) => {
+    const isUser = m.role === 'user';
+    const avatar = isUser ? '👤' : '✨';
+    const bubbleCls = isUser ? 'cpBubble user' : 'cpBubble';
+    const metaRight = !isUser ? feedbackBtns(idx) : `<span></span>`;
+    const cites = (!isUser && m.cites && m.cites.length)
+      ? `<div class="cpCites">${m.cites.map(c => `<span class="cpCite" onclick="${c.onClick}">${c.label}</span>`).join('')}</div>`
+      : '';
+    const sugg = (!isUser && m.suggestions && m.suggestions.length)
+      ? `<div class="cpCites" style="margin-top:10px;">
+          ${m.suggestions.map(s => `<span class="cpCite" onclick="cpAskStarter('${escapeQuotes(s)}')">↪ ${s}</span>`).join('')}
+        </div>`
+      : '';
+
+    return `
+      <div class="cpMsg">
+        <div class="cpAvatar">${avatar}</div>
+        <div class="${bubbleCls}">
+          ${escapeHtml(m.text).replace(/\n/g,'<br>')}
+          ${cites}
+          ${sugg}
+          <div class="cpMeta">
+            <span>${m.ts.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+            ${metaRight}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // scroll to bottom
+  const body = document.getElementById('cpBody');
+  body.scrollTop = body.scrollHeight;
+}
+
+function escapeHtml(s){
+  return (s||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+function feedbackBtns(idx){
+  return `
+    <span style="display:flex;gap:6px;align-items:center;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Feedback</span>
+      <span class="cpCite" style="color:var(--green);" onclick="cpFeedback(${idx},'up')">👍</span>
+      <span class="cpCite" style="color:var(--accent);" onclick="cpFeedback(${idx},'down')">👎</span>
+    </span>
+  `;
+}
+
+function cpFeedback(idx, dir){
+  const key = 'cp_feedback_' + idx;
+  localStorage.setItem(key, dir);
+  toast(dir === 'up' ? 'Thanks — feedback saved.' : 'Got it — we’ll improve.');
+}
+
+/* Streaming (simulated) + tool routing */
+async function cpStreamAssistant(question){
+  // typing indicator
+  const typingIdx = cpMessages.length;
+  cpMessages.push({ role:'assistant', text:'', typing:true, cites:[], suggestions:[], ts:new Date() });
+  cpRenderTyping(typingIdx);
+
+  const result = cpRoute(question);
+
+  // stream response
+  const full = result.text;
+  let acc = '';
+  const chunks = chunkText(full, cpMode === 'quick' ? 18 : cpMode === 'deep' ? 6 : 10);
+  for(const ch of chunks){
+    acc += ch;
+    cpMessages[typingIdx].text = acc;
+    cpMessages[typingIdx].typing = false;
+    cpMessages[typingIdx].cites = result.cites || [];
+    cpMessages[typingIdx].suggestions = result.suggestions || [];
+    cpRender();
+    await sleep(cpMode === 'quick' ? 18 : 38);
+  }
+}
+
+function cpRenderTyping(idx){
+  const wrap = document.getElementById('cpMsgs');
+  cpMessages[idx].text = `<span class="cpTyping"><span class="cpDot"></span><span class="cpDot"></span><span class="cpDot"></span>Thinking…</span>`;
+  cpRender();
+}
+
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+function chunkText(s, size){
+  const out = [];
+  for(let i=0;i<s.length;i+=size) out.push(s.slice(i,i+size));
+  return out;
+}
+
+/* “Function calling” router: answers + citations + action suggestions */
+function cpRoute(qRaw){
+  const q = (qRaw||'').toLowerCase();
+  const cites = [];
+  const suggestions = [];
+
+  // Helper citations (open views / entities)
+  const citeView = (label, view) => cites.push({ label, onClick: `go('${view}')` });
+  const citePR = (label, prId) => cites.push({ label, onClick: `openDetail('${prId}')` });
+
+  // 1) Pending approvals
+  if(q.includes('pending') || q.includes('approval')){
+    const pend = PRS.filter(p => p.status === 'pending');
+    citeView('Open Pending Approval', 'approvals');
+    suggestions.push('Show pending approvals in Western Europe', 'Who raised the pending PRs?');
+
+    if(q.includes('western europe') || q.includes('we ' ) || q.includes('we)') || q.includes('we')){
+      const we = pend.filter(p => p.region === 'we');
+      we.slice(0,3).forEach(p => citePR(p.id, p.id));
+      return {
+        text: `You have ${we.length} pending PR(s) in Western Europe.\nTop items are linked as citations.`,
+        cites, suggestions
+      };
+    }
+
+    pend.slice(0,3).forEach(p => citePR(p.id, p.id));
+    return {
+      text: `You have ${pend.length} pending PR(s) awaiting approval.\nI linked a few of them as citations.`,
+      cites, suggestions
+    };
+  }
+
+  // 2) Budget / AOP utilization
+  if(q.includes('aop') || q.includes('budget') || q.includes('utilization') || q.includes('utilisation')){
+    citeView('Open AOP', 'aop');
+    citeView('Budget vs AOP', 'budget');
+
+    if(!AOP){
+      return { text: `AOP isn’t configured yet in the app. Open AOP and set total budget + allocations to unlock utilization insights.`, cites, suggestions:['Configure AOP now'] };
+    }
+
+    const committed = getTotalSpend();
+    const pct = pc(committed, AOP.total);
+    const actuals = getTotalActuals();
+    const pctA = pc(actuals, AOP.total);
+
+    suggestions.push('Top overspent categories', 'Reconciliation summary');
+
+    return {
+      text:
+        `AOP FY${AOP.year}: ${fmt(AOP.total)}\n` +
+        `Committed: ${fmt(committed)} (${pct}% of AOP)\n` +
+        `Actuals (Paid): ${fmt(actuals)} (${pctA}% of AOP)\n\n` +
+        `Want category-level remaining? Ask “Digital Media remaining budget”.`,
+      cites, suggestions
+    };
+  }
+
+  // 3) Invoices open / overdue / actuals
+  if(q.includes('invoice') || q.includes('actual') || q.includes('overdue') || q.includes('accrual')){
+    citeView('Open Invoices', 'invoices');
+    citeView('Open Reconciliation', 'reconcile');
+
+    const open = INVOICES.filter(i => ['received','processing','queried'].includes(i.status));
+    const acc = INVOICES.filter(i => i.status === 'accrual');
+    suggestions.push('Show invoices queried', 'Payment rate');
+
+    return {
+      text:
+        `Invoices: ${INVOICES.length} total\n` +
+        `Open/Action needed: ${open.length}\n` +
+        `Accrual entries: ${acc.length}\n` +
+        `Total invoiced: ${fmt(getTotalInvoiced())}\n` +
+        `Actuals paid: ${fmt(getTotalActuals())}\n`,
+      cites, suggestions
+    };
+  }
+
+  // 4) Category: Digital Media (and other categories)
+  const catHit = CATS.find(c => q.includes(c.label.toLowerCase()) || q.includes(c.id));
+  if(catHit){
+    citeView('Open Categories', 'categories');
+    citeView('Budget vs AOP', 'budget');
+    const comm = getSpend(catHit.label);
+    const act = getCatActuals(catHit.label);
+    let aopLine = '';
+    if(AOP && AOP.allocations && AOP.allocations[catHit.label]){
+      const a = AOP.allocations[catHit.label];
+      const used = pc(comm, a.annual);
+      aopLine = `\nAOP for ${catHit.label}: ${fmt(a.annual)} (${a.pct.toFixed(1)}%). Used: ${used}%.\nRemaining: ${fmt(Math.max(0, a.annual - comm))}`;
+    }
+    suggestions.push(`Show ${catHit.label} invoices`, `Show ${catHit.label} PRs`);
+
+    return {
+      text:
+        `${catHit.em} ${catHit.label}\nCommitted: ${fmt(comm)}\nActuals (Paid): ${fmt(act) || '—'}${aopLine}`,
+      cites, suggestions
+    };
+  }
+
+  // 5) “Create PR” action (human-in-the-loop)
+  if(q.includes('create pr') || q.includes('new pr') || q.includes('raise pr')){
+    return {
+      text:
+        `I can open the PR form for you. You stay in control — review and submit when ready.`,
+      cites: [
+        { label: 'Open New PR form', onClick: 'openModal()' }
+      ],
+      suggestions: ['What fields are mandatory for PR?', 'Suggest PR justification for a digital campaign']
+    };
+  }
+
+  // 6) “Load SAP data” action
+  if(q.includes('load sap') || q.includes('kob1') || q.includes('fagll03') || q.includes('upload')){
+    return {
+      text:
+        `I can open the SAP data import panel (KOB1/FAGLL03/manual). After you map columns, you can import.`,
+      cites: [
+        { label: 'Open SAP Upload', onClick: 'openUploadModal()' },
+        { label: 'Invoices & Actuals', onClick: `go('invoices')` }
+      ],
+      suggestions: ['Expected columns for KOB1', 'Expected columns for FAGLL03']
+    };
+  }
+
+  // Fallback: friendly guidance
+  return {
+    text:
+      `I can help you with:\n` +
+      `• Pending approvals, PR status, and who raised items\n` +
+      `• AOP budget utilization and category remaining\n` +
+      `• Invoices, actuals, accruals, reconciliation\n` +
+      `• Actions: open New PR / load SAP exports\n\n` +
+      `Try: “Budget utilization vs AOP” or “Invoices open / overdue”.`,
+    cites,
+    suggestions: ['Show pending approvals', 'Budget utilization vs AOP', 'Invoices open / overdue', 'Reconciliation summary']
+  };
+}
+
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+
+updateBadges();
+render();
+setTimeout(onAllocInput,80);
+</script>
+</body>
+</html>
